@@ -2,13 +2,16 @@
 #include <iostream>
 
 #include "./mainMenu.cpp"
+#include "./regCar.cpp"
 
 int main() {
   int option = mainMenu();
 
-  std::cout << option;
-
   switch (option) {
+    case 0:
+      regCar();
+      break;
+
     case 1:
       exit(1);
       break;
