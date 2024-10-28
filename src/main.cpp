@@ -1,30 +1,18 @@
-#include <ftxui/dom/elements.hpp>
-#include <ftxui/screen/screen.hpp>
+#include <cstdlib>
 #include <iostream>
 
-int main(void) {
-  using namespace ftxui;
+#include "./mainMenu.cpp"
 
-  // Define the document
-  Element document = hbox({
-      text("left") | border,
-      text("middle") | border,
-      text("right") | border,
-  });
+int main() {
+  int option = mainMenu();
 
-  Element win = window(text("Adrien Duport"), text("Cool."));
+  std::cout << option;
 
-  auto screen = Screen::Create(Dimension::Full(),       // Width
-                               Dimension::Fit(document) // Height
-  );
+  switch (option) {
+    case 1:
+      exit(1);
+      break;
+  }
 
-  //  Render(screen, document);
-  //  screen.Print();
-
-  std::cout << "Hello>\n";
-
-  Render(screen, win);
-  screen.Print();
-
-  return EXIT_SUCCESS;
+  return 0;
 }

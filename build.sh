@@ -1,6 +1,7 @@
 #!/bin/sh
 
 buildOnly=false
+fxtuiLibPath=$PWD/Dependencies
 
 if [ $# -ge 1 ]; then
   if [ "$1" = "-b" ]; then
@@ -29,7 +30,7 @@ else
 fi
 
 cd ./build/
-cmake ..
+cmake -DCMAKE_PREFIX_PATH=$fxtuiLibPath ..
 if [ $? -eq 1 ]; then
   echo "quit building due to error;"
   exit 1
@@ -50,5 +51,6 @@ if ! $buildOnly; then
 
 
   "
+  # clear
   ./build/car-dealer
 fi
