@@ -117,11 +117,6 @@ class BuildFeatures {
 
   double groundClearance;
   double dimensions[3];  // lxbxh
-  // Rating from 0 to 5?
-  double suspensionQuality;
-  double cabinNoise;
-  double vibrationLevels;
-  // tireQuality?
 
   void defaultFlags() {
     this->bodyMaterial = "Unknown";
@@ -131,9 +126,9 @@ class BuildFeatures {
     this->dimensions[1] = 0;  // lxbxh
     this->dimensions[2] = 0;  // lxbxh
     // Rating from 0 to 5?
-    this->suspensionQuality = 0;
-    this->cabinNoise = 0;
-    this->vibrationLevels = 0;
+    //    this->suspensionQuality = 0;
+    //    this->cabinNoise = 0;
+    //    this->vibrationLevels = 0;
   }
 
  public:
@@ -144,10 +139,10 @@ class BuildFeatures {
                 double cabinNoise, double vibrationLevels)
 
       : bodyMaterial(bodyMaterial),
-        groundClearance(groundClearance),
-        suspensionQuality(suspensionQuality),
-        cabinNoise(cabinNoise),
-        vibrationLevels(vibrationLevels)
+        groundClearance(groundClearance)
+  //        suspensionQuality(suspensionQuality),
+  //        cabinNoise(cabinNoise),
+  //        vibrationLevels(vibrationLevels)
 
   {
     this->dimensions[0] = dimensions[0];
