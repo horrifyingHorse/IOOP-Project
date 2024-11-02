@@ -1,0 +1,34 @@
+Hatchback
+Buxa
+Buxa 2024
+9000
+5
+12
+6
+2
+10
+5
+yellow, orange, pink, green, red
+9000
+medium
+Petrol
+Manual
+4
+true
+false
+false
+false
+true
+0
+true
+false
+false
+false
+false
+false
+true
+true
+6,4,5
+55
+Slim
+comes with no wheels!
