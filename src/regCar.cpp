@@ -5,21 +5,27 @@
 #include <ftxui/component/component_options.hpp>
 #include <ftxui/dom/elements.hpp>   // for filler, text, hbox, vbox
 #include <ftxui/screen/screen.hpp>  // for Full, Screen
-#include <iostream>
 #include <string>
 #include <vector>
 
+#include "../include/Car.h"
 #include "ftxui/component/component.hpp"
 #include "ftxui/component/screen_interactive.hpp"
 #include "ftxui/dom/node.hpp"      // for Render
 #include "ftxui/screen/color.hpp"  // for ftxui
+
+int stoi(std::string& s) { return (s == "") ? 0 : std::stoi(s); }
+
+int stod(std::string& s) { return (s == "") ? 0 : std::stod(s); }
+
 using namespace ftxui;
 
 class VariantManager {
  public:
   friend class VariantManager;
 
-  VariantManager(const char* vn = "Variant ", VariantManager* v = nullptr) {
+  VariantManager(const char* vn = "Variant ", VariantManager* v = nullptr)
+      : builtVariant(nullptr) {
     feature_index = v ? v->feature_index : 0;
     airBagShow = v ? v->airBagShow : false;
     hasESC = v ? v->hasESC : false;
@@ -261,13 +267,51 @@ class VariantManager {
     });
   }
 
-  Component GetComponent() { return renderer; }
+  Component getComponent() { return renderer; }
 
   std::string getVarName() { return this->variantName; }
+
+  bool build() {
+    SafetyFeatures sf(airBagShow, hasABS, hasESC, hasRearviewCam,
+                      hasParkingSensors, stoi(airBagsNum));
+    ComfortFeatures cf(hasAirCondition, hasPowerWindows, hasPowerLocks,
+                       hasKeylessEntry, stoi(airConditionNum));
+    TechnoFeatures tf(hasBluetoothConn, hasUSBports, hasNavigationSys,
+                      hasAudioSystem);
+
+    double dim[3];
+    dim[0] = stod(dimL);
+    dim[1] = stod(dimB);
+    dim[2] = stod(dimH);
+    BuildFeatures bf(bodyMaterial, stod(groundClearanceNum), dim);
+    if (!bf.isValid()) return false;
+
+    CarVariant* v = new CarVariant(variantName, stod(price));
+    v->setFuelType(fueltypeMap[fuelSelect])
+        .setCarTransmission(transmissionMap[transmissionSelect])
+        .pushAdditionalFeatures(additionalFeat)
+        .setSafetyFeatures(sf)
+        .setComfortFeatures(cf)
+        .setTechnoFeatures(tf)
+        .setBuildFeatures(bf);
+
+    if (!v->isValid()) {
+      delete v;
+      return false;
+    }
+
+    builtVariant = v;
+
+    return true;
+  }
+
+  CarVariant& getVariant() { return *builtVariant; }
 
   ~VariantManager() { variantCount--; }
 
  private:
+  CarVariant* builtVariant;
+
   bool airBagShow;
   bool hasABS;
   bool hasESC;
@@ -297,8 +341,13 @@ class VariantManager {
   static inline int variantCount = 1;
   static inline std::vector<std::string> fueltype = {"PETROL", "DIESEL", "CNG",
                                                      "BIFUEL", "ELECTRIC"};
+  static inline std::vector<Fuel> fueltypeMap = {
+      Fuel::PETROL, Fuel::DIESEL, Fuel::CNG, Fuel::BIFUEL, Fuel::ELECTRIC};
   static inline std::vector<std::string> transmission = {
       "MANUAL", "SEMIAUTOMATIC", "AUTOMATIC"};
+  static inline std::vector<CarTransmission> transmissionMap = {
+      CarTransmission::MANUAL, CarTransmission::SEMIAUTOMATIC,
+      CarTransmission::AUTOMATIC};
 
   int feature_index;
   int airBagSelect;
@@ -344,7 +393,9 @@ class VariantManager {
   Component renderer;  // Renderer for the variant manager
 };
 
-int regCar() {
+NewCar& regCar() {
+  NewCar* brandNewCar = nullptr;
+  std::vector<VariantManager*> v;
   auto screen = ScreenInteractive::Fullscreen();
 
   int tab_index = 0;
@@ -357,6 +408,18 @@ int regCar() {
   std::string basePriceStr, mileageStr, powerStr;  // Use strings for input
   double basePrice, mileage, power;
   std::string fuelTankCapacity, seatingCapacity, numOfDoors, engineCapacity;
+  std::vector<std::string> cartype = {
+      "COMPACTSUV", "CONVERTIBLE", "DEFAULT", "HATCHBACK", "JEEP",
+      "LIMOUSINE",  "LUXURYCAR",   "SEDAN",   "SPORTS",    "SUV",
+  };
+  std::vector<CarType> ct = {
+      CarType::COMPACTSUV, CarType::CONVERTIBLE, CarType::DEFAULT,
+      CarType::HATCHBACK,  CarType::JEEP,        CarType::LIMOUSINE,
+      CarType::LUXURYCAR,  CarType::SEDAN,       CarType::SPORTS,
+      CarType::SUV,
+  };
+
+  int cartypeIndex = 2;
 
   Component input_model_name = Input(&modelName, "Model Name");
   Component input_model = Input(&model, "Model");
@@ -464,38 +527,53 @@ int regCar() {
     return false;
   });
 
+  Component dropdown_cartype =
+      Dropdown(&cartype, &cartypeIndex) | size(WIDTH, EQUAL, 30);
+
   auto style = ButtonOption::Animated(Color::Default, Color::GrayDark,
                                       Color::Default, Color::White);
   Component button_submit = Button(
       "Submit",
       [&] {
-        // Validate and convert string inputs to double
-        try {
-          basePrice = std::stod(basePriceStr);
-          mileage = std::stod(mileageStr);
-          power = std::stod(powerStr);
+        basePrice = stod(basePriceStr);
+        mileage = stod(mileageStr);
+        power = stod(powerStr);
+        int d = stoi(numOfDoors);
+        int sc = stoi(seatingCapacity);
+        int fc = stod(fuelTankCapacity);
+        int ec = stod(engineCapacity);
 
-          // Print or handle the values (for debugging)
-          std::cout << "Model: " << modelName << ", " << model << "\n";
-          std::cout << "Base Price: " << basePrice << "\n";
-          std::cout << "Mileage: " << mileage << "\n";
-          std::cout << "Power: " << power << "\n";
-          std::cout << "Fuel Tank Capacity: " << fuelTankCapacity << "\n";
-          std::cout << "Seating Capacity: " << seatingCapacity << "\n";
-          std::cout << "Number of Doors: " << numOfDoors << "\n";
-          std::cout << "Engine Capacity: " << engineCapacity << "\n";
-        } catch (const std::invalid_argument&) {
-          // Handle invalid input
-          std::cout << "Invalid input for base price, mileage, or power.\n";
+        Car tempCar(modelName, model, ct[cartypeIndex]);
+        tempCar.setBasePrice(basePrice)
+            .setMilagePower(mileage, power)
+            .setDoorSeatingCap(d, sc)
+            .setFuelEngineCap(fc, ec);
+
+        if (!tempCar.isValid()) {
+          return;
         }
-      }
-      //  ,ButtonOption::Ascii()
-      ,
+
+        brandNewCar = new NewCar(tempCar);
+
+        for (auto variant : v) {
+          if (!variant->build()) {
+            delete brandNewCar;
+            brandNewCar = nullptr;
+            return;
+          }
+
+          brandNewCar->pushVariant(variant->getVariant());
+        }
+
+        screen.Exit();
+        return;
+      },
       style);
 
   auto component = Container::Vertical({
       input_model_name,
       input_model,
+      dropdown_cartype,
       input_base_price,
       input_mileage,
       input_power,
@@ -513,11 +591,15 @@ int regCar() {
             hbox(text("Model Name                 : "),
                  input_model_name->Render()),
             hbox(text("Model                      : "), input_model->Render()),
+            hbox(text("Car Type                   : "),
+                 dropdown_cartype->Render()),
             hbox(text("Base Price                 : "),
                  input_base_price->Render()),
+            separator(),
             hbox(text("Mileage                    : "),
                  input_mileage->Render()),
             hbox(text("Power (bhp)                : "), input_power->Render()),
+            separator(),
             hbox(text("Fuel Tank Capacity (liters): "),
                  input_fuel_tank_capacity->Render()),
             hbox(text("Seating Capacity           : "),
@@ -530,15 +612,15 @@ int regCar() {
   });
 
   /// Variants Tab
-  std::vector<VariantManager*> v;
   auto basicVariant = new VariantManager("Base Variant");
   v.push_back(basicVariant);
   auto tab_selection =
       Menu(&tab_entries, &tab_index, MenuOption::HorizontalAnimated());
   auto tab_content =
-      Container::Tab({basicInfoTab, basicVariant->GetComponent()}, &tab_index);
+      Container::Tab({basicInfoTab, basicVariant->getComponent()}, &tab_index);
 
   // Global Button
+  auto quitBut = Button(" x ", [&] { screen.Exit(); }, style);
   auto varBut = Button(
       " + ",
       [&] {
@@ -547,13 +629,13 @@ int regCar() {
         tab_entries.push_back(newComp->getVarName() == "Variant 1"
                                   ? " Base Variant "
                                   : " " + newComp->getVarName() + " ");
-        tab_content->Add({newComp->GetComponent()});
-        tab_content->SetActiveChild(newComp->GetComponent());
+        tab_content->Add({newComp->getComponent()});
+        tab_content->SetActiveChild(newComp->getComponent());
       },
       style);
 
   auto main_container = Container::Vertical({
-      Container::Horizontal({tab_selection, varBut, button_submit}),
+      Container::Horizontal({tab_selection, varBut, button_submit, quitBut}),
       tab_content,
   });
 
@@ -561,12 +643,12 @@ int regCar() {
     return vbox({
         text("Register New Car") | bold | hcenter,
         hbox({tab_selection->Render() | flex, varBut->Render(),
-              button_submit->Render()}),
+              button_submit->Render(), quitBut->Render()}),
         tab_content->Render() | flex,
     });
   });
 
   screen.Loop(main_renderer);
 
-  return 0;
+  return *brandNewCar;
 }

@@ -2,6 +2,7 @@
 #define CAR_H
 
 #include <climits>
+#include <iostream>
 #include <string>
 #include <vector>
 
@@ -19,6 +20,10 @@ enum class CarType {
   SPORTS,
   SUV,
 };
+
+std::string fuelToString(Fuel fuel);
+std::string transmissionToString(CarTransmission transmission);
+std::string carTypeToString(CarType type);
 
 class SafetyFeatures {
  protected:
@@ -45,8 +50,23 @@ class SafetyFeatures {
         hasABS(hasABS),
         hasESC(hasESC),
         hasRearviewCam(hasRearviewCam),
-        hasParkingSensors(hasParkingSensors),
-        airbags(airbags) {}
+        hasParkingSensors(hasParkingSensors) {
+    if (!hasAirbags) {
+      this->airbags = 0;
+    }
+  }
+
+  void display() const {
+    std::cout << "Car Features:" << std::endl;
+    std::cout << "Has Airbags: " << (hasAirbags ? "Yes" : "No") << std::endl;
+    std::cout << "Has ABS: " << (hasABS ? "Yes" : "No") << std::endl;
+    std::cout << "Has ESC: " << (hasESC ? "Yes" : "No") << std::endl;
+    std::cout << "Has Rearview Camera: " << (hasRearviewCam ? "Yes" : "No")
+              << std::endl;
+    std::cout << "Has Parking Sensors: " << (hasParkingSensors ? "Yes" : "No")
+              << std::endl;
+    std::cout << "Number of Airbags: " << airbags << std::endl;
+  }
 
   friend class CarVariant;
 };
@@ -59,8 +79,8 @@ class ComfortFeatures {
   bool hasKeylessEntry;
 
   int airCondition;
-  int powerWnidows;
-  int powerLocks;
+  // int powerWnidows;
+  // int powerLocks;
 
  public:
   ComfortFeatures()
@@ -68,20 +88,39 @@ class ComfortFeatures {
         hasPowerWindows(false),
         hasPowerLocks(false),
         hasKeylessEntry(false),
-        airCondition(0),
-        powerWnidows(0),
-        powerLocks(0) {}
+        airCondition(0)
+  // ,powerWnidows(0),
+  // powerLocks(0)
+  {}
 
   ComfortFeatures(bool hasAirCondition, bool hasPowerWindows,
-                  bool hasPowerLocks, bool hasKeylessEntry, int airCondition,
-                  int powerWindows, int powerLocks)
+                  bool hasPowerLocks, bool hasKeylessEntry, int airCondition
+                  // , int powerWindows, int powerLocks
+                  )
       : hasAirCondition(hasAirCondition),
         hasPowerWindows(hasPowerWindows),
         hasPowerLocks(hasPowerLocks),
         hasKeylessEntry(hasKeylessEntry),
-        airCondition(airCondition),
-        powerWnidows(powerWindows),
-        powerLocks(powerLocks) {}
+        airCondition(airCondition)
+  // , powerWnidows(powerWindows), powerLocks(powerLocks)
+  {
+    if (!hasAirCondition) this->airCondition = 0;
+    // if (!hasPowerWindows) this->powerWnidows = 0;
+    // if (!hasPowerLocks) this->powerLocks = 0;
+  }
+
+  void display() const {
+    std::cout << "Additional Features:" << std::endl;
+    std::cout << "Has Air Conditioning: " << (hasAirCondition ? "Yes" : "No")
+              << std::endl;
+    std::cout << "Has Power Windows: " << (hasPowerWindows ? "Yes" : "No")
+              << std::endl;
+    std::cout << "Has Power Locks: " << (hasPowerLocks ? "Yes" : "No")
+              << std::endl;
+    std::cout << "Has Keyless Entry: " << (hasKeylessEntry ? "Yes" : "No")
+              << std::endl;
+    std::cout << "Air Conditioning Level: " << airCondition << std::endl;
+  }
 
   friend class CarVariant;
 };
@@ -107,6 +146,17 @@ class TechnoFeatures {
         hasUSBports(hasUSBports),
         hasNavigationSys(hasNavigationSys),
         hasAudioSystem(hasAudioSystem) {}
+
+  void display() const {
+    std::cout << "Connectivity and Entertainment Features:" << std::endl;
+    std::cout << "Has Bluetooth Connection: "
+              << (hasBluetoothConn ? "Yes" : "No") << std::endl;
+    std::cout << "Has USB Ports: " << (hasUSBports ? "Yes" : "No") << std::endl;
+    std::cout << "Has Navigation System: " << (hasNavigationSys ? "Yes" : "No")
+              << std::endl;
+    std::cout << "Has Audio System: " << (hasAudioSystem ? "Yes" : "No")
+              << std::endl;
+  }
 
   friend class CarVariant;
 };
@@ -134,9 +184,10 @@ class BuildFeatures {
  public:
   BuildFeatures() { this->defaultFlags(); }
 
-  BuildFeatures(std::string bodyMaterial, double groundClearance,
-                double dimensions[3], double suspensionQuality,
-                double cabinNoise, double vibrationLevels)
+  BuildFeatures(
+      std::string bodyMaterial, double groundClearance, double dimensions[3]
+      //, double suspensionQuality, double cabinNoise, double vibrationLevels
+      )
 
       : bodyMaterial(bodyMaterial),
         groundClearance(groundClearance)
@@ -148,6 +199,24 @@ class BuildFeatures {
     this->dimensions[0] = dimensions[0];
     this->dimensions[1] = dimensions[1];
     this->dimensions[2] = dimensions[2];
+  }
+
+  bool isValid() {
+    if (this->bodyMaterial == "Unknown") return false;
+    if (this->groundClearance <= 0) return false;
+    for (auto dimension : this->dimensions) {
+      if (dimension <= 0) return false;
+    }
+
+    return true;
+  }
+
+  void display() const {
+    std::cout << "Vehicle Specifications:" << std::endl;
+    std::cout << "Body Material: " << bodyMaterial << std::endl;
+    std::cout << "Ground Clearance: " << groundClearance << " mm" << std::endl;
+    std::cout << "Dimensions (L x W x H): " << dimensions[0] << " x "
+              << dimensions[1] << " x " << dimensions[2] << " m" << std::endl;
   }
 
   friend class CarVariant;
@@ -171,7 +240,31 @@ class CarVariant {
 
   std::vector<std::string> additionalFeatures;
 
+  std::string trim(std::string& s) {
+    s.erase(s.find_last_not_of(" \n\r\t") + 1);
+    return s;
+  }
+
  public:
+  void display() {
+    std::cout << "Variant Name: " << variantName << "\n";
+    std::cout << "Variant price: " << price << "\n";
+    std::cout << "Fuel Type: " << fuelToString(fuelType) << "\n";
+    std::cout << "Transmission: " << transmissionToString(carTransmission)
+              << "\n";
+    safetyFeatures.display();
+    technoFeatures.display();
+    comfortFeatures.display();
+    buildFeatures.display();
+  }
+
+  bool isValid() {
+    if (trim(variantName) == "") return false;
+    if (price <= 0) return false;
+
+    return true;
+  }
+
   CarVariant(std::string variantName, double price)
       : variantName(variantName), price(price) {}
 
@@ -220,6 +313,11 @@ class CarVariant {
 
 // Abstract? - No
 class Car {
+  std::string trim(std::string& s) {
+    s.erase(s.find_last_not_of(" \n\r\t") + 1);
+    return s;
+  }
+
  protected:
   std::string modelName;
   std::string model;
@@ -239,7 +337,16 @@ class Car {
 
  public:
   Car(std::string modelName, std::string model, CarType carType)
-      : modelName(modelName), model(model), carType(carType) {}
+      : modelName(modelName),
+        model(model),
+        carType(carType),
+        basePrice(0),
+        mileage(0),
+        power(0),
+        fuelTankCapacity(0),
+        seatingCapacity(0),
+        numOfDoors(0),
+        engineCapacity(0) {}
 
   ~Car() = default;
 
@@ -265,6 +372,32 @@ class Car {
     this->engineCapacity = ec;
     return *this;
   }
+
+  bool isValid() {
+    if (trim(model) == "" || trim(modelName) == "") return false;
+    if (carType == CarType::DEFAULT) return false;
+    if (basePrice * mileage * power <= 0) return false;
+    if (seatingCapacity * numOfDoors * engineCapacity <= 0) return false;
+    if (fuelTankCapacity < 0) return false;
+
+    return true;
+  }
+
+  void display() const {
+    std::cout << "Car Model Details:" << std::endl;
+    std::cout << "Model Name: " << modelName << std::endl;
+    std::cout << "Model: " << model << std::endl;
+    std::cout << "Base Price: $" << basePrice << std::endl;
+    std::cout << "Mileage: " << mileage << " km/l" << std::endl;
+    std::cout << "Power: " << power << " bhp" << std::endl;
+    std::cout << "Fuel Tank Capacity: " << fuelTankCapacity << " liters"
+              << std::endl;
+    std::cout << "Seating Capacity: " << seatingCapacity << " persons"
+              << std::endl;
+    std::cout << "Number of Doors: " << numOfDoors << std::endl;
+    std::cout << "Engine Capacity: " << engineCapacity << " cc" << std::endl;
+    std::cout << "Car Type: " << carTypeToString(carType) << std::endl;
+  }
 };
 
 class NewCar : public Car {
@@ -273,6 +406,19 @@ class NewCar : public Car {
   std::vector<CarVariant> variants;
 
  public:
+  void display() {
+    Car::display();
+    for (auto variant : variants) {
+      variant.display();
+      std::cout << "\n";
+    }
+  }
+
+  NewCar(Car& c) : Car(c) {
+    colors = {};
+    variants = {};
+  }
+
   NewCar& pushColors(std::string& color) {
     this->colors.push_back(color);
     return *this;

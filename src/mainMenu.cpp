@@ -16,6 +16,7 @@ int mainMenu() {
 
   std::vector<std::string> entries = {
       "1. Register New Car",
+      "2. List Car Entries",
       "</ Exit"
   };
   int selected = 0;

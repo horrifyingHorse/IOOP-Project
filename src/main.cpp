@@ -1,20 +1,36 @@
+#include <cmath>
+#include <cstdio>
 #include <cstdlib>
 #include <iostream>
+#include <vector>
 
-#include "./mainMenu.cpp"
-#include "./regCar.cpp"
+#include "../include/Car.h"
+#include "../include/UI.h"
 
 int main() {
-  int option = mainMenu();
+  std::vector<NewCar> inventoryNewCar;
 
-  switch (option) {
-    case 0:
-      regCar();
-      break;
+  while (1) {
+    int option = mainMenu();
 
-    case 1:
-      exit(1);
-      break;
+    switch (option) {
+      case 0:
+        inventoryNewCar.push_back(regCar());
+        break;
+
+      case 1:
+        for (auto item : inventoryNewCar) {
+          item.display();
+        }
+        break;
+
+      default:
+        exit(1);
+        break;
+    }
+    std::cin.clear();
+    fflush(stdin);
+    char c = getchar();
   }
 
   return 0;

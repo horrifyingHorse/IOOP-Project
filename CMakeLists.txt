@@ -15,7 +15,7 @@ endif()
 
 file(GLOB SOURCES src/*.cpp)
 
-add_executable(car-dealer src/main.cpp)
+add_executable(car-dealer ${SOURCES})
 
 find_package(ftxui REQUIRED)
 target_link_libraries(car-dealer PRIVATE ftxui::screen ftxui::dom
