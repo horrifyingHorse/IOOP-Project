@@ -9,14 +9,28 @@
 
 int main() {
   std::vector<NewCar> inventoryNewCar;
+  std::vector<NewCar>* inventoryPtr = NewCar::loadFromDB();
+
+  if (inventoryPtr != nullptr) {
+    inventoryNewCar = *inventoryPtr;
+  }
 
   while (1) {
     int option = mainMenu();
 
     switch (option) {
-      case 0:
-        inventoryNewCar.push_back(regCar());
+      case 0: {
+        NewCar* aCar = regCar();
+        if (aCar == nullptr) break;
+
+        if (NewCar::storeIntoDB(aCar))
+          std::cout << "Stored in db\n";
+        else
+          std::cout << "Newly Reg Car was not stored in db\n";
+
+        inventoryNewCar.push_back(*aCar);
         break;
+      }
 
       case 1:
         for (auto item : inventoryNewCar) {

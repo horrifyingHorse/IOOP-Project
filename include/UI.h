@@ -3,6 +3,6 @@
 #include "Car.h"
 
 int mainMenu();
-NewCar& regCar();
+NewCar* regCar();
 
 #endif  // !UI_H

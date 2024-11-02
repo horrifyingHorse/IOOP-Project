@@ -2,7 +2,10 @@
 #define CAR_H
 
 #include <climits>
+#include <filesystem>
+#include <fstream>
 #include <iostream>
+#include <iterator>
 #include <string>
 #include <vector>
 
@@ -24,6 +27,21 @@ enum class CarType {
 std::string fuelToString(Fuel fuel);
 std::string transmissionToString(CarTransmission transmission);
 std::string carTypeToString(CarType type);
+
+Fuel stringToFuel(const std::string& fuelStr);
+CarTransmission stringToTransmission(const std::string& transmissionStr);
+CarType stringToCarType(std::string type);
+
+namespace utils {
+int stoi(std::string& s);
+int stod(std::string& s);
+
+int stoi(std::string s);
+int stod(std::string s);
+
+bool stob(std::string s);
+
+}  // namespace utils
 
 class SafetyFeatures {
  protected:
@@ -53,6 +71,8 @@ class SafetyFeatures {
         hasParkingSensors(hasParkingSensors) {
     if (!hasAirbags) {
       this->airbags = 0;
+    } else {
+      this->airbags = airbags;
     }
   }
 
@@ -202,10 +222,20 @@ class BuildFeatures {
   }
 
   bool isValid() {
-    if (this->bodyMaterial == "Unknown") return false;
-    if (this->groundClearance <= 0) return false;
+    if (this->bodyMaterial == "Unknown") {
+      std::cerr << "Wrong Body";
+      return false;
+    }
+
+    if (this->groundClearance <= 0) {
+      std::cerr << "Wrong GC";
+      return false;
+    }
     for (auto dimension : this->dimensions) {
-      if (dimension <= 0) return false;
+      if (dimension <= 0) {
+        std::cerr << "Wrong Dim";
+        return false;
+      }
     }
 
     return true;
@@ -245,7 +275,47 @@ class CarVariant {
     return s;
   }
 
+  static inline bool loadIntoDB(std::ofstream& f, CarVariant& cv) {
+    f << cv.price << "\n";
+    f << cv.variantName << "\n";
+    f << fuelToString(cv.fuelType) << "\n";
+    f << transmissionToString(cv.carTransmission) << "\n";
+
+    f << cv.safetyFeatures.airbags << "\n";
+    f << cv.safetyFeatures.hasParkingSensors << "\n";
+    f << cv.safetyFeatures.hasRearviewCam << "\n";
+    f << cv.safetyFeatures.hasESC << "\n";
+    f << cv.safetyFeatures.hasABS << "\n";
+    f << cv.safetyFeatures.hasAirbags << "\n";
+
+    f << cv.comfortFeatures.airCondition << "\n";
+    f << cv.comfortFeatures.hasKeylessEntry << "\n";
+    f << cv.comfortFeatures.hasPowerLocks << "\n";
+    f << cv.comfortFeatures.hasPowerWindows << "\n";
+    f << cv.comfortFeatures.hasAirCondition << "\n";
+
+    f << cv.technoFeatures.hasAudioSystem << "\n";
+    f << cv.technoFeatures.hasNavigationSys << "\n";
+    f << cv.technoFeatures.hasUSBports << "\n";
+    f << cv.technoFeatures.hasBluetoothConn << "\n";
+
+    for (auto dimension : cv.buildFeatures.dimensions) {
+      f << dimension << ",";
+    }
+    f << "\n";
+    f << cv.buildFeatures.groundClearance << "\n";
+    f << cv.buildFeatures.bodyMaterial << "\n";
+
+    for (auto feature : cv.additionalFeatures) {
+      f << feature << ",";
+    }
+    f << "\n";
+
+    return true;
+  }
+
  public:
+  friend class NewCar;
   void display() {
     std::cout << "Variant Name: " << variantName << "\n";
     std::cout << "Variant price: " << price << "\n";
@@ -401,6 +471,14 @@ class Car {
 };
 
 class NewCar : public Car {
+ private:
+  static inline std::string readFile(std::ifstream& f, std::string& line) {
+    if (f.eof()) return "";
+    std::getline(f, line);
+
+    return line;
+  }
+
  protected:
   std::vector<std::string> colors;
   std::vector<CarVariant> variants;
@@ -408,6 +486,13 @@ class NewCar : public Car {
  public:
   void display() {
     Car::display();
+
+    std::cout << "Available Colors: ";
+    for (auto color : colors) {
+      std::cout << color << "\t";
+    }
+    std::cout << "\n";
+
     for (auto variant : variants) {
       variant.display();
       std::cout << "\n";
@@ -419,7 +504,7 @@ class NewCar : public Car {
     variants = {};
   }
 
-  NewCar& pushColors(std::string& color) {
+  NewCar& pushColors(std::string color) {
     this->colors.push_back(color);
     return *this;
   }
@@ -434,6 +519,192 @@ class NewCar : public Car {
   NewCar& pushVariant(CarVariant& variant) {
     this->variants.push_back(variant);
     return *this;
+  }
+
+  static inline std::vector<NewCar>* loadFromDB() {
+    namespace fs = std::filesystem;
+    std::vector<NewCar>* v = nullptr;
+
+    fs::path dirPath = "./db/";
+
+    if (fs::exists(dirPath) && fs::is_directory(dirPath)) {
+      std::cout << "Directory exists: " << dirPath << std::endl;
+
+      for (const auto& entry : fs::directory_iterator(dirPath)) {
+        if (entry.is_regular_file() && entry.path().extension() == ".txt") {
+          std::ifstream file(entry.path());
+          if (!file) {
+            std::cerr << "Could not open file: " << entry.path() << std::endl;
+            continue;
+          }
+
+          std::cout << "Reading file: " << entry.path() << std::endl;
+          std::string line;
+
+          Car tempCar(NewCar::readFile(file, line),
+                      NewCar::readFile(file, line),
+                      stringToCarType(NewCar::readFile(file, line)));
+          double bp = utils::stod(NewCar::readFile(file, line));
+          double m = utils::stod(NewCar::readFile(file, line));
+          double p = utils::stod(NewCar::readFile(file, line));
+          int d = utils::stoi(NewCar::readFile(file, line));
+          int sc = utils::stoi(NewCar::readFile(file, line));
+          int fc = utils::stoi(NewCar::readFile(file, line));
+          int ec = utils::stoi(NewCar::readFile(file, line));
+
+          tempCar.setBasePrice(bp)
+              .setMilagePower(m, p)
+              .setDoorSeatingCap(d, sc)
+              .setFuelEngineCap(fc, ec);
+          if (!tempCar.isValid()) {
+            std::cerr << "Corrupt Data in " << entry.path()
+                      << ": (Invalid Car Object)\n";
+            tempCar.display();
+            continue;
+          }
+
+          NewCar* brandNewCar = new NewCar(tempCar);
+
+          NewCar::readFile(file, line);
+          while (line != "" && line.find(",") != std::string::npos) {
+            brandNewCar->pushColors(line.substr(0, line.find(",")));
+            line = line.substr(line.find(",") + 1);
+          }
+          if (line != "") brandNewCar->pushColors(line);
+
+          bool errFlag = false;
+          while (!file.eof()) {
+            CarVariant* cv =
+                new CarVariant(NewCar::readFile(file, line),
+                               utils::stod(NewCar::readFile(file, line)));
+            Fuel ft = stringToFuel(NewCar::readFile(file, line));
+            CarTransmission ct =
+                stringToTransmission(NewCar::readFile(file, line));
+            SafetyFeatures sf(utils::stob(NewCar::readFile(file, line)),
+                              utils::stob(NewCar::readFile(file, line)),
+                              utils::stob(NewCar::readFile(file, line)),
+                              utils::stob(NewCar::readFile(file, line)),
+                              utils::stob(NewCar::readFile(file, line)),
+                              utils::stoi(NewCar::readFile(file, line)));
+
+            ComfortFeatures cf(utils::stob(NewCar::readFile(file, line)),
+                               utils::stob(NewCar::readFile(file, line)),
+                               utils::stob(NewCar::readFile(file, line)),
+                               utils::stob(NewCar::readFile(file, line)),
+                               utils::stoi(NewCar::readFile(file, line)));
+
+            TechnoFeatures tf(utils::stob(NewCar::readFile(file, line)),
+                              utils::stob(NewCar::readFile(file, line)),
+                              utils::stob(NewCar::readFile(file, line)),
+                              utils::stob(NewCar::readFile(file, line)));
+
+            double dims[3];
+            NewCar::readFile(file, line);
+            if (line.find(",") == std::string::npos) {
+              if (file.eof()) break;
+              std::cerr << "Corrupt Data in " << entry.path()
+                        << ": (Invalid BuildFeatures Object)\n";
+              errFlag = true;
+              break;
+            }
+            dims[0] = utils::stod(line.substr(0, line.find(",")));
+            line = line.substr(line.find(",") + 1);
+            dims[1] = utils::stod(line.substr(0, line.find(",")));
+            line = line.substr(line.find(",") + 1);
+            dims[2] = utils::stod(line.substr(0));
+
+            BuildFeatures bf(NewCar::readFile(file, line),
+                             utils::stod(NewCar::readFile(file, line)), dims);
+
+            if (!bf.isValid()) {
+              std::cerr << "Corrupt Data in " << entry.path()
+                        << ": (Invalid BuildFeatures Object)\n";
+              errFlag = true;
+              break;
+            }
+
+            cv->setFuelType(ft)
+                .setCarTransmission(ct)
+                .setSafetyFeatures(sf)
+                .setComfortFeatures(cf)
+                .setTechnoFeatures(tf)
+                .setBuildFeatures(bf);
+
+            if (!cv->isValid()) {
+              std::cerr << "Corrupt Data in " << entry.path()
+                        << ": (Invalid CarVariant Object)\n";
+              errFlag = true;
+              break;
+            }
+
+            NewCar::readFile(file, line);
+            while (line != "" && line.find(",") != std::string::npos) {
+              cv->pushAdditionalFeatures(line.substr(0, line.find(",")));
+              line = line.substr(line.find(",") + 1);
+            }
+            if (line != "") cv->pushAdditionalFeatures(line);
+
+            brandNewCar->pushVariant(*cv);
+          }
+          if (errFlag) continue;
+          if (v == nullptr) {
+            v = new std::vector<NewCar>;
+          }
+          v->push_back(*brandNewCar);
+        }
+      }
+    } else {
+      std::cerr << "No DataBase directory found in PWD: " << dirPath
+                << std::endl;
+    }
+
+    return v;
+  }
+
+  static inline bool storeIntoDB(NewCar* brandNewCar) {
+    namespace fs = std::filesystem;
+    fs::path dirPath = "./db/";
+    std::string fname =
+        brandNewCar->modelName + "_" + brandNewCar->model + ".txt";
+    fs::path filePath = dirPath / fname;
+
+    if (!fs::exists(dirPath)) {
+      if (fs::create_directory(dirPath)) {
+        std::cout << "Directory created: " << dirPath << std::endl;
+      } else {
+        std::cerr << "Failed to create directory: " << dirPath << std::endl;
+        return 1;
+      }
+    }
+
+    std::ofstream file(filePath);
+    if (!file.is_open()) {
+      std::cerr << "Failed to create file: " << filePath << std::endl;
+      return false;
+    }
+
+    file << carTypeToString(brandNewCar->carType) << "\n";
+    file << brandNewCar->model << "\n";
+    file << brandNewCar->modelName << "\n";
+    file << brandNewCar->basePrice << "\n";
+    file << brandNewCar->mileage << "\n";
+    file << brandNewCar->power << "\n";
+    file << brandNewCar->numOfDoors << "\n";
+    file << brandNewCar->seatingCapacity << "\n";
+    file << brandNewCar->fuelTankCapacity << "\n";
+    file << brandNewCar->engineCapacity << "\n";
+    for (auto color : brandNewCar->colors) {
+      file << color << ",";
+    }
+    file << "\n";
+
+    for (auto variant : brandNewCar->variants) {
+      if (!CarVariant::loadIntoDB(file, variant)) {
+        return false;
+      }
+    }
+
+    return true;
   }
 };
 

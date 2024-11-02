@@ -393,7 +393,7 @@ class VariantManager {
   Component renderer;  // Renderer for the variant manager
 };
 
-NewCar& regCar() {
+NewCar* regCar() {
   NewCar* brandNewCar = nullptr;
   std::vector<VariantManager*> v;
   auto screen = ScreenInteractive::Fullscreen();
@@ -404,7 +404,7 @@ NewCar& regCar() {
       " Base Variant ",
   };
 
-  std::string modelName, model;
+  std::string modelName, model, colors = "";
   std::string basePriceStr, mileageStr, powerStr;  // Use strings for input
   double basePrice, mileage, power;
   std::string fuelTankCapacity, seatingCapacity, numOfDoors, engineCapacity;
@@ -423,6 +423,7 @@ NewCar& regCar() {
 
   Component input_model_name = Input(&modelName, "Model Name");
   Component input_model = Input(&model, "Model");
+  Component input_colors = Input(&colors, "Available Colors (, separated)");
 
   Component input_base_price = Input(&basePriceStr, "Base Price");
   input_base_price |= CatchEvent([&](Event event) {
@@ -555,6 +556,12 @@ NewCar& regCar() {
 
         brandNewCar = new NewCar(tempCar);
 
+        while (colors != "" && colors.find(",") != std::string::npos) {
+          brandNewCar->pushColors(colors.substr(0, colors.find(",")));
+          colors = colors.substr(colors.find(",") + 1);
+        }
+        if (colors != "") brandNewCar->pushColors(colors);
+
         for (auto variant : v) {
           if (!variant->build()) {
             delete brandNewCar;
@@ -573,6 +580,7 @@ NewCar& regCar() {
   auto component = Container::Vertical({
       input_model_name,
       input_model,
+      input_colors,
       dropdown_cartype,
       input_base_price,
       input_mileage,
@@ -591,6 +599,7 @@ NewCar& regCar() {
             hbox(text("Model Name                 : "),
                  input_model_name->Render()),
             hbox(text("Model                      : "), input_model->Render()),
+            hbox(text("Colors                     : "), input_colors->Render()),
             hbox(text("Car Type                   : "),
                  dropdown_cartype->Render()),
             hbox(text("Base Price                 : "),
@@ -650,5 +659,5 @@ NewCar& regCar() {
 
   screen.Loop(main_renderer);
 
-  return *brandNewCar;
+  return brandNewCar;
 }
