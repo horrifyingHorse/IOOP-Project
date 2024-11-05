@@ -33,9 +33,11 @@ int main() {
       }
 
       case 1:
-        for (auto item : inventoryNewCar) {
-          item.display();
-        }
+        // for (auto item : inventoryNewCar) {
+        //   item.display();
+        // }
+
+        searchCars(inventoryNewCar);
         break;
 
       default:

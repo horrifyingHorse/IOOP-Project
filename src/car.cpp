@@ -111,11 +111,3 @@ CarType stringToCarType(const std::string carTypeStr) {
     return CarType::DEFAULT;
   }
 }
-
-int utils::stoi(std::string& s) { return (s == "") ? 0 : std::stoi(s); }
-int utils::stod(std::string& s) { return (s == "") ? 0 : std::stod(s); }
-
-int utils::stoi(std::string s) { return (s == "") ? 0 : std::stoi(s); }
-int utils::stod(std::string s) { return (s == "") ? 0 : std::stod(s); }
-
-bool utils::stob(std::string s) { return (s == "true" || s == "1") ? true : false; }

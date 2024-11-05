@@ -9,6 +9,8 @@
 #include <string>
 #include <vector>
 
+#include "utils.h"
+
 enum class Fuel { PETROL, DIESEL, CNG, BIFUEL, ELECTRIC };
 enum class CarTransmission { MANUAL, SEMIAUTOMATIC, AUTOMATIC };
 enum class CarType {
@@ -32,16 +34,7 @@ Fuel stringToFuel(const std::string& fuelStr);
 CarTransmission stringToTransmission(const std::string& transmissionStr);
 CarType stringToCarType(std::string type);
 
-namespace utils {
-int stoi(std::string& s);
-int stod(std::string& s);
-
-int stoi(std::string s);
-int stod(std::string s);
-
-bool stob(std::string s);
-
-}  // namespace utils
+class CarSearchEngine;
 
 class SafetyFeatures {
  protected:
@@ -484,6 +477,7 @@ class NewCar : public Car {
   std::vector<CarVariant> variants;
 
  public:
+  friend class CarSearchEngine;
   void display() {
     Car::display();
 
