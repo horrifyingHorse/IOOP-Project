@@ -1,4 +1,5 @@
 #include "../include/Car.h"
+#include <iomanip>
 
 std::string fuelToString(Fuel fuel) {
   switch (fuel) {
@@ -302,7 +303,7 @@ bool CarVariant::loadIntoDB(std::ofstream& f, CarVariant& cv) {
 
 void CarVariant::display() {
   std::cout << "Variant Name: " << variantName << "\n";
-  std::cout << "Variant price: " << price << "\n";
+  std::cout << "Variant price: " << std::fixed << std::setprecision(2) << price << "\n";
   std::cout << "Fuel Type: " << fuelToString(fuelType) << "\n";
   std::cout << "Transmission: " << transmissionToString(carTransmission)
             << "\n";
@@ -368,9 +369,9 @@ Car::Car(std::string modelName, std::string model, CarType carType)
     : modelName(modelName),
       model(model),
       carType(carType),
-      basePrice(0),
-      mileage(0),
-      power(0),
+      basePrice(0.0),
+      mileage(0.0),
+      power(0.0),
       fuelTankCapacity(0),
       seatingCapacity(0),
       numOfDoors(0),
@@ -414,7 +415,7 @@ void Car::display() const {
   std::cout << "Model Name: " << modelName << std::endl;
   std::cout << "Model: " << model << std::endl;
   std::cout << "Base Price: $" << basePrice << std::endl;
-  std::cout << "Mileage: " << mileage << " km/l" << std::endl;
+  std::cout << "Mileage: " << std::fixed << std::setprecision(1) << mileage << " km/l" << std::endl;
   std::cout << "Power: " << power << " bhp" << std::endl;
   std::cout << "Fuel Tank Capacity: " << fuelTankCapacity << " liters"
             << std::endl;

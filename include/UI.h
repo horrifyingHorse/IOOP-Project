@@ -2,19 +2,24 @@
 #define UI_H
 
 #include "Car.h"
-#include "utils.h"
 #include "ftxui/component/component.hpp"
 #include "ftxui/component/screen_interactive.hpp"
+#include "utils.h"
 
-int mainMenu();
+int profileSelect();
+
+void employeeProfile(std::vector<NewCar>& inventoryNewCar);
+int mainMenuEmployee();
+
+void customerProfile(std::vector<NewCar>& inventoryNewCar);
+int mainMenuCustomer();
+
 NewCar* regCar();
 int searchCars(std::vector<NewCar>& inventoryNewCar);
 
 using namespace ftxui;
 class VariantManager {
  public:
-  friend class VariantManager;
-
   VariantManager(const char* vn = "Variant ", VariantManager* v = nullptr)
       : builtVariant(nullptr) {
     feature_index = v ? v->feature_index : 0;

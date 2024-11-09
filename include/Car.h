@@ -54,6 +54,8 @@ class SafetyFeatures {
   void display() const;
 
   friend class CarVariant;
+  friend class SearchResultRender;
+  friend class RenderVariant;
 };
 
 class ComfortFeatures {
@@ -77,6 +79,8 @@ class ComfortFeatures {
   void display() const;
 
   friend class CarVariant;
+  friend class SearchResultRender;
+  friend class RenderVariant;
 };
 
 class TechnoFeatures {
@@ -94,6 +98,8 @@ class TechnoFeatures {
   void display() const;
 
   friend class CarVariant;
+  friend class SearchResultRender;
+  friend class RenderVariant;
 };
 
 class BuildFeatures {
@@ -116,6 +122,8 @@ class BuildFeatures {
   void display() const;
 
   friend class CarVariant;
+  friend class SearchResultRender;
+  friend class RenderVariant;
 };
 
 class CarVariant {
@@ -140,6 +148,9 @@ class CarVariant {
 
  public:
   friend class NewCar;
+  friend class SearchResultRender;
+  friend class RenderVariant;
+
   void display();
 
   bool isValid();
@@ -197,6 +208,7 @@ class NewCar : public Car {
 
  public:
   friend class CarSearchEngine;
+  friend class SearchResultRender;
   void display();
 
   NewCar(Car& c);

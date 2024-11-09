@@ -7,14 +7,11 @@
 
 #include "../include/Car.h"
 #include "../include/UI.h"
+#include "../include/utils.h"
 #include "ftxui/component/component.hpp"
 #include "ftxui/component/screen_interactive.hpp"
 #include "ftxui/dom/node.hpp"      // for Render
 #include "ftxui/screen/color.hpp"  // for ftxui
-
-int stoi(std::string& s) { return (s == "") ? 0 : std::stoi(s); }
-
-int stod(std::string& s) { return (s == "") ? 0 : std::stod(s); }
 
 using namespace ftxui;
 NewCar* regCar() {
@@ -160,13 +157,13 @@ NewCar* regCar() {
   Component button_submit = Button(
       "Submit",
       [&] {
-        basePrice = stod(basePriceStr);
-        mileage = stod(mileageStr);
-        power = stod(powerStr);
-        int d = stoi(numOfDoors);
-        int sc = stoi(seatingCapacity);
-        int fc = stod(fuelTankCapacity);
-        int ec = stod(engineCapacity);
+        basePrice = utils::stod(basePriceStr);
+        mileage = utils::stod(mileageStr);
+        power = utils::stod(powerStr);
+        int d = utils::stoi(numOfDoors);
+        int sc = utils::stoi(seatingCapacity);
+        int fc = utils::stod(fuelTankCapacity);
+        int ec = utils::stod(engineCapacity);
 
         Car tempCar(modelName, model, ct[cartypeIndex]);
         tempCar.setBasePrice(basePrice)

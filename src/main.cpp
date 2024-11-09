@@ -1,7 +1,6 @@
 #include <cmath>
 #include <cstdio>
 #include <cstdlib>
-#include <iostream>
 #include <vector>
 
 #include "../include/Car.h"
@@ -16,37 +15,20 @@ int main() {
   }
 
   while (1) {
-    int option = mainMenu();
-
-    switch (option) {
-      case 0: {
-        NewCar* aCar = regCar();
-        if (aCar == nullptr) break;
-
-        if (NewCar::storeIntoDB(aCar))
-          std::cout << "Stored in db\n";
-        else
-          std::cout << "Newly Reg Car was not stored in db\n";
-
-        inventoryNewCar.push_back(*aCar);
+    int usrProfile = profileSelect();
+    switch (usrProfile) {
+      case 0:
+        customerProfile(inventoryNewCar);
         break;
-      }
 
       case 1:
-        // for (auto item : inventoryNewCar) {
-        //   item.display();
-        // }
-
-        searchCars(inventoryNewCar);
+        employeeProfile(inventoryNewCar);
         break;
 
       default:
-        exit(1);
+        return 0;
         break;
     }
-    std::cin.clear();
-    fflush(stdin);
-    char c = getchar();
   }
 
   return 0;
