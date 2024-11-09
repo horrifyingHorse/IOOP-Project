@@ -1,6 +1,7 @@
 #include "../include/UI.h"
 
-void employeeProfile(std::vector<NewCar>& inventoryNewCar) {
+void employeeProfile(std::vector<NewCar>& inventoryNewCar,
+                     std::vector<SecondHandCar>& inventorySHCar) {
   while (1) {
     int option = mainMenuEmployee();
 
@@ -18,13 +19,19 @@ void employeeProfile(std::vector<NewCar>& inventoryNewCar) {
         break;
       }
 
-      case 1:
-        // for (auto item : inventoryNewCar) {
-        //   item.display();
-        // }
+      case 1: {
+        SecondHandCar* aCar = regSecondHandCar();
+        if (aCar == nullptr) break;
 
-        // searchCars(inventoryNewCar);
+        if (SecondHandCar::storeIntoDB(aCar))
+          std::cout << "Stored in db\n";
+        else
+          std::cout << "Newly Reg Car was not stored in db\n";
+
+        inventorySHCar.push_back(*aCar);
+
         break;
+      }
 
       default:
         return;
@@ -36,7 +43,8 @@ void employeeProfile(std::vector<NewCar>& inventoryNewCar) {
   }
 }
 
-void customerProfile(std::vector<NewCar>& inventoryNewCar) {
+void customerProfile(std::vector<NewCar>& inventoryNewCar,
+                     std::vector<SecondHandCar>& inventorySHCar) {
   while (1) {
     int option = mainMenuCustomer();
 
@@ -49,10 +57,19 @@ void customerProfile(std::vector<NewCar>& inventoryNewCar) {
         searchCars(inventoryNewCar);
         break;
 
+      case 1:
+        for (auto item : inventorySHCar) {
+          item.display();
+        }
+
+        searchCars(inventoryNewCar);
+        break;
+
       default:
         return;
         break;
     }
+
     // std::cin.clear();
     // fflush(stdin);
     // char c = getchar();

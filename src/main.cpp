@@ -8,21 +8,28 @@
 
 int main() {
   std::vector<NewCar> inventoryNewCar;
+  std::vector<SecondHandCar> inventorySHCar;
+
   std::vector<NewCar>* inventoryPtr = NewCar::loadFromDB();
+  std::vector<SecondHandCar>* inventorySHPtr = SecondHandCar::loadFromDB();
 
   if (inventoryPtr != nullptr) {
     inventoryNewCar = *inventoryPtr;
+  }
+
+  if (inventorySHPtr != nullptr) {
+    inventorySHCar = *inventorySHPtr;
   }
 
   while (1) {
     int usrProfile = profileSelect();
     switch (usrProfile) {
       case 0:
-        customerProfile(inventoryNewCar);
+        customerProfile(inventoryNewCar, inventorySHCar);
         break;
 
       case 1:
-        employeeProfile(inventoryNewCar);
+        employeeProfile(inventoryNewCar, inventorySHCar);
         break;
 
       default:

@@ -8,13 +8,16 @@
 
 int profileSelect();
 
-void employeeProfile(std::vector<NewCar>& inventoryNewCar);
+void employeeProfile(std::vector<NewCar>& inventoryNewCar,
+                     std::vector<SecondHandCar>& inventorySHCar);
 int mainMenuEmployee();
 
-void customerProfile(std::vector<NewCar>& inventoryNewCar);
+void customerProfile(std::vector<NewCar>& inventoryNewCar,
+                     std::vector<SecondHandCar>& inventorySHCar);
 int mainMenuCustomer();
 
 NewCar* regCar();
+SecondHandCar* regSecondHandCar();
 int searchCars(std::vector<NewCar>& inventoryNewCar);
 
 using namespace ftxui;

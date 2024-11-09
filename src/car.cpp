@@ -1,4 +1,5 @@
 #include "../include/Car.h"
+
 #include <iomanip>
 
 std::string fuelToString(Fuel fuel) {
@@ -303,7 +304,8 @@ bool CarVariant::loadIntoDB(std::ofstream& f, CarVariant& cv) {
 
 void CarVariant::display() {
   std::cout << "Variant Name: " << variantName << "\n";
-  std::cout << "Variant price: " << std::fixed << std::setprecision(2) << price << "\n";
+  std::cout << "Variant price: " << std::fixed << std::setprecision(2) << price
+            << "\n";
   std::cout << "Fuel Type: " << fuelToString(fuelType) << "\n";
   std::cout << "Transmission: " << transmissionToString(carTransmission)
             << "\n";
@@ -415,7 +417,8 @@ void Car::display() const {
   std::cout << "Model Name: " << modelName << std::endl;
   std::cout << "Model: " << model << std::endl;
   std::cout << "Base Price: $" << basePrice << std::endl;
-  std::cout << "Mileage: " << std::fixed << std::setprecision(1) << mileage << " km/l" << std::endl;
+  std::cout << "Mileage: " << std::fixed << std::setprecision(1) << mileage
+            << " km/l" << std::endl;
   std::cout << "Power: " << power << " bhp" << std::endl;
   std::cout << "Fuel Tank Capacity: " << fuelTankCapacity << " liters"
             << std::endl;
@@ -426,7 +429,7 @@ void Car::display() const {
   std::cout << "Car Type: " << carTypeToString(carType) << std::endl;
 }
 
-std::string NewCar::readFile(std::ifstream& f, std::string& line) {
+std::string Car::readFile(std::ifstream& f, std::string& line) {
   if (f.eof()) return "";
   std::getline(f, line);
 
@@ -490,15 +493,15 @@ std::vector<NewCar>* NewCar::loadFromDB() {
         std::cout << "Reading file: " << entry.path() << std::endl;
         std::string line;
 
-        Car tempCar(NewCar::readFile(file, line), NewCar::readFile(file, line),
-                    stringToCarType(NewCar::readFile(file, line)));
-        double bp = utils::stod(NewCar::readFile(file, line));
-        double m = utils::stod(NewCar::readFile(file, line));
-        double p = utils::stod(NewCar::readFile(file, line));
-        int d = utils::stoi(NewCar::readFile(file, line));
-        int sc = utils::stoi(NewCar::readFile(file, line));
-        int fc = utils::stoi(NewCar::readFile(file, line));
-        int ec = utils::stoi(NewCar::readFile(file, line));
+        Car tempCar(Car::readFile(file, line), NewCar::readFile(file, line),
+                    stringToCarType(Car::readFile(file, line)));
+        double bp = utils::stod(Car::readFile(file, line));
+        double m = utils::stod(Car::readFile(file, line));
+        double p = utils::stod(Car::readFile(file, line));
+        int d = utils::stoi(Car::readFile(file, line));
+        int sc = utils::stoi(Car::readFile(file, line));
+        int fc = utils::stoi(Car::readFile(file, line));
+        int ec = utils::stoi(Car::readFile(file, line));
 
         tempCar.setBasePrice(bp)
             .setMilagePower(m, p)
@@ -513,7 +516,7 @@ std::vector<NewCar>* NewCar::loadFromDB() {
 
         NewCar* brandNewCar = new NewCar(tempCar);
 
-        NewCar::readFile(file, line);
+        Car::readFile(file, line);
         while (line != "" && line.find(",") != std::string::npos) {
           brandNewCar->pushColors(line.substr(0, line.find(",")));
           line = line.substr(line.find(",") + 1);
@@ -523,31 +526,30 @@ std::vector<NewCar>* NewCar::loadFromDB() {
         bool errFlag = false;
         while (!file.eof()) {
           CarVariant* cv =
-              new CarVariant(NewCar::readFile(file, line),
-                             utils::stod(NewCar::readFile(file, line)));
-          Fuel ft = stringToFuel(NewCar::readFile(file, line));
-          CarTransmission ct =
-              stringToTransmission(NewCar::readFile(file, line));
-          SafetyFeatures sf(utils::stob(NewCar::readFile(file, line)),
-                            utils::stob(NewCar::readFile(file, line)),
-                            utils::stob(NewCar::readFile(file, line)),
-                            utils::stob(NewCar::readFile(file, line)),
-                            utils::stob(NewCar::readFile(file, line)),
-                            utils::stoi(NewCar::readFile(file, line)));
+              new CarVariant(Car::readFile(file, line),
+                             utils::stod(Car::readFile(file, line)));
+          Fuel ft = stringToFuel(Car::readFile(file, line));
+          CarTransmission ct = stringToTransmission(Car::readFile(file, line));
+          SafetyFeatures sf(utils::stob(Car::readFile(file, line)),
+                            utils::stob(Car::readFile(file, line)),
+                            utils::stob(Car::readFile(file, line)),
+                            utils::stob(Car::readFile(file, line)),
+                            utils::stob(Car::readFile(file, line)),
+                            utils::stoi(Car::readFile(file, line)));
 
-          ComfortFeatures cf(utils::stob(NewCar::readFile(file, line)),
-                             utils::stob(NewCar::readFile(file, line)),
-                             utils::stob(NewCar::readFile(file, line)),
-                             utils::stob(NewCar::readFile(file, line)),
-                             utils::stoi(NewCar::readFile(file, line)));
+          ComfortFeatures cf(utils::stob(Car::readFile(file, line)),
+                             utils::stob(Car::readFile(file, line)),
+                             utils::stob(Car::readFile(file, line)),
+                             utils::stob(Car::readFile(file, line)),
+                             utils::stoi(Car::readFile(file, line)));
 
-          TechnoFeatures tf(utils::stob(NewCar::readFile(file, line)),
-                            utils::stob(NewCar::readFile(file, line)),
-                            utils::stob(NewCar::readFile(file, line)),
-                            utils::stob(NewCar::readFile(file, line)));
+          TechnoFeatures tf(utils::stob(Car::readFile(file, line)),
+                            utils::stob(Car::readFile(file, line)),
+                            utils::stob(Car::readFile(file, line)),
+                            utils::stob(Car::readFile(file, line)));
 
           double dims[3];
-          NewCar::readFile(file, line);
+          Car::readFile(file, line);
           if (line.find(",") == std::string::npos) {
             if (file.eof()) break;
             std::cerr << "Corrupt Data in " << entry.path()
@@ -561,8 +563,8 @@ std::vector<NewCar>* NewCar::loadFromDB() {
           line = line.substr(line.find(",") + 1);
           dims[2] = utils::stod(line.substr(0));
 
-          BuildFeatures bf(NewCar::readFile(file, line),
-                           utils::stod(NewCar::readFile(file, line)), dims);
+          BuildFeatures bf(Car::readFile(file, line),
+                           utils::stod(Car::readFile(file, line)), dims);
 
           if (!bf.isValid()) {
             std::cerr << "Corrupt Data in " << entry.path()
@@ -585,7 +587,7 @@ std::vector<NewCar>* NewCar::loadFromDB() {
             break;
           }
 
-          NewCar::readFile(file, line);
+          Car::readFile(file, line);
           while (line != "" && line.find(",") != std::string::npos) {
             cv->pushAdditionalFeatures(line.substr(0, line.find(",")));
             line = line.substr(line.find(",") + 1);
@@ -649,6 +651,228 @@ bool NewCar::storeIntoDB(NewCar* brandNewCar) {
     if (!CarVariant::loadIntoDB(file, variant)) {
       return false;
     }
+  }
+
+  return true;
+}
+
+SecondHandCar::SecondHandCar(Car& c)
+    : Car(c),
+      colors("Default"),
+      variant(nullptr),
+      prevOwner("Default"),
+      yearsUsed(INT_MAX) {}
+
+SecondHandCar& SecondHandCar::pushColors(std::string& color) {
+  this->colors = color;
+  return *this;
+}
+
+SecondHandCar& SecondHandCar::pushVariant(CarVariant& variant) {
+  this->variant = &variant;
+  return *this;
+}
+
+SecondHandCar& SecondHandCar::setCarInfo(std::string owner, int yearsUsed,
+                                         std::string colors) {
+  this->prevOwner = owner;
+  this->yearsUsed = yearsUsed;
+  this->colors = colors;
+  return *this;
+}
+
+bool SecondHandCar::isValid() {
+  if (utils::trim(colors) == "") return false;
+  if (variant == nullptr) return false;
+  if (prevOwner == "Default") return false;
+  if (yearsUsed == INT_MAX) return false;
+
+  return true;
+}
+
+void SecondHandCar::display() {
+  std::cout << "Previous Owner: " << this->prevOwner << "\n";
+  std::cout << "Years of Service: " << this->yearsUsed << "\n";
+  Car::display();
+  std::cout << "Color: " << this->colors << "\n";
+
+  variant->display();
+  std::cout << "\n";
+}
+
+std::vector<SecondHandCar>* SecondHandCar::loadFromDB() {
+  namespace fs = std::filesystem;
+  std::vector<SecondHandCar>* v = nullptr;
+
+  fs::path dirPath = "./db/preowned";
+
+  if (fs::exists(dirPath) && fs::is_directory(dirPath)) {
+    std::cout << "Directory exists: " << dirPath << std::endl;
+
+    for (const auto& entry : fs::directory_iterator(dirPath)) {
+      if (entry.is_regular_file() && entry.path().extension() == ".txt") {
+        std::ifstream file(entry.path());
+        if (!file) {
+          std::cerr << "Could not open file: " << entry.path() << std::endl;
+          continue;
+        }
+
+        std::cout << "Reading file: " << entry.path() << std::endl;
+        std::string line;
+
+        Car tempCar(Car::readFile(file, line), NewCar::readFile(file, line),
+                    stringToCarType(Car::readFile(file, line)));
+        double bp = utils::stod(Car::readFile(file, line));
+        double m = utils::stod(Car::readFile(file, line));
+        double p = utils::stod(Car::readFile(file, line));
+        int d = utils::stoi(Car::readFile(file, line));
+        int sc = utils::stoi(Car::readFile(file, line));
+        int fc = utils::stoi(Car::readFile(file, line));
+        int ec = utils::stoi(Car::readFile(file, line));
+
+        tempCar.setBasePrice(bp)
+            .setMilagePower(m, p)
+            .setDoorSeatingCap(d, sc)
+            .setFuelEngineCap(fc, ec);
+        if (!tempCar.isValid()) {
+          std::cerr << "Corrupt Data in " << entry.path()
+                    << ": (Invalid Car Object)\n";
+          tempCar.display();
+          continue;
+        }
+
+        SecondHandCar* brandNewCar = new SecondHandCar(tempCar);
+
+        brandNewCar->prevOwner = Car::readFile(file, line);
+        brandNewCar->yearsUsed = utils::stoi(Car::readFile(file, line));
+        brandNewCar->colors = Car::readFile(file, line);
+
+        bool errFlag = false;
+        while (!file.eof()) {
+          CarVariant* cv =
+              new CarVariant(Car::readFile(file, line),
+                             utils::stod(Car::readFile(file, line)));
+          Fuel ft = stringToFuel(Car::readFile(file, line));
+          CarTransmission ct = stringToTransmission(Car::readFile(file, line));
+          SafetyFeatures sf(utils::stob(Car::readFile(file, line)),
+                            utils::stob(Car::readFile(file, line)),
+                            utils::stob(Car::readFile(file, line)),
+                            utils::stob(Car::readFile(file, line)),
+                            utils::stob(Car::readFile(file, line)),
+                            utils::stoi(Car::readFile(file, line)));
+
+          ComfortFeatures cf(utils::stob(Car::readFile(file, line)),
+                             utils::stob(Car::readFile(file, line)),
+                             utils::stob(Car::readFile(file, line)),
+                             utils::stob(Car::readFile(file, line)),
+                             utils::stoi(Car::readFile(file, line)));
+
+          TechnoFeatures tf(utils::stob(Car::readFile(file, line)),
+                            utils::stob(Car::readFile(file, line)),
+                            utils::stob(Car::readFile(file, line)),
+                            utils::stob(Car::readFile(file, line)));
+
+          double dims[3];
+          Car::readFile(file, line);
+          if (line.find(",") == std::string::npos) {
+            if (file.eof()) break;
+            std::cerr << "Corrupt Data in " << entry.path()
+                      << ": (Invalid BuildFeatures Object)\n";
+            errFlag = true;
+            break;
+          }
+          dims[0] = utils::stod(line.substr(0, line.find(",")));
+          line = line.substr(line.find(",") + 1);
+          dims[1] = utils::stod(line.substr(0, line.find(",")));
+          line = line.substr(line.find(",") + 1);
+          dims[2] = utils::stod(line.substr(0));
+
+          BuildFeatures bf(Car::readFile(file, line),
+                           utils::stod(Car::readFile(file, line)), dims);
+
+          if (!bf.isValid()) {
+            std::cerr << "Corrupt Data in " << entry.path()
+                      << ": (Invalid BuildFeatures Object)\n";
+            errFlag = true;
+            break;
+          }
+
+          cv->setFuelType(ft)
+              .setCarTransmission(ct)
+              .setSafetyFeatures(sf)
+              .setComfortFeatures(cf)
+              .setTechnoFeatures(tf)
+              .setBuildFeatures(bf);
+
+          if (!cv->isValid()) {
+            std::cerr << "Corrupt Data in " << entry.path()
+                      << ": (Invalid CarVariant Object)\n";
+            errFlag = true;
+            break;
+          }
+
+          Car::readFile(file, line);
+          while (line != "" && line.find(",") != std::string::npos) {
+            cv->pushAdditionalFeatures(line.substr(0, line.find(",")));
+            line = line.substr(line.find(",") + 1);
+          }
+          if (line != "") cv->pushAdditionalFeatures(line);
+
+          brandNewCar->pushVariant(*cv);
+        }
+        if (errFlag) continue;
+        if (v == nullptr) {
+          v = new std::vector<SecondHandCar>;
+        }
+        v->push_back(*brandNewCar);
+      }
+    }
+  } else {
+    std::cerr << "No DataBase directory found in PWD: " << dirPath << std::endl;
+  }
+
+  return v;
+}
+
+bool SecondHandCar::storeIntoDB(SecondHandCar* brandNewCar) {
+  namespace fs = std::filesystem;
+  fs::path dirPath = "./db/preowned";
+  std::string fname = brandNewCar->modelName + "_" + brandNewCar->prevOwner +
+                      utils::itos(brandNewCar->yearsUsed) + ".txt";
+  fs::path filePath = dirPath / fname;
+
+  if (!fs::exists(dirPath)) {
+    if (fs::create_directory(dirPath)) {
+      std::cout << "Directory created: " << dirPath << std::endl;
+    } else {
+      std::cerr << "Failed to create directory: " << dirPath << std::endl;
+      return 1;
+    }
+  }
+
+  std::ofstream file(filePath);
+  if (!file.is_open()) {
+    std::cerr << "Failed to create file: " << filePath << std::endl;
+    return false;
+  }
+
+  file << carTypeToString(brandNewCar->carType) << "\n";
+  file << brandNewCar->model << "\n";
+  file << brandNewCar->modelName << "\n";
+  file << brandNewCar->basePrice << "\n";
+  file << brandNewCar->mileage << "\n";
+  file << brandNewCar->power << "\n";
+  file << brandNewCar->numOfDoors << "\n";
+  file << brandNewCar->seatingCapacity << "\n";
+  file << brandNewCar->fuelTankCapacity << "\n";
+  file << brandNewCar->engineCapacity << "\n";
+
+  file << brandNewCar->prevOwner << "\n";
+  file << brandNewCar->yearsUsed << "\n";
+  file << brandNewCar->colors << "\n";
+
+  if (!CarVariant::loadIntoDB(file, *brandNewCar->variant)) {
+    return false;
   }
 
   return true;

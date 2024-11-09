@@ -1,7 +1,7 @@
 #include <ftxui/component/component_base.hpp>
 #include <ftxui/component/component_options.hpp>
-#include <ftxui/dom/elements.hpp>   // for filler, text, hbox, vbox
-#include <ftxui/screen/screen.hpp>  // for Full, Screen
+#include <ftxui/dom/elements.hpp>
+#include <ftxui/screen/screen.hpp>
 #include <string>
 #include <vector>
 
@@ -10,8 +10,8 @@
 #include "../include/utils.h"
 #include "ftxui/component/component.hpp"
 #include "ftxui/component/screen_interactive.hpp"
-#include "ftxui/dom/node.hpp"      // for Render
-#include "ftxui/screen/color.hpp"  // for ftxui
+#include "ftxui/dom/node.hpp"
+#include "ftxui/screen/color.hpp"
 
 using namespace ftxui;
 NewCar* regCar() {
@@ -274,6 +274,272 @@ NewCar* regCar() {
         text("Register New Car") | bold | hcenter,
         hbox({tab_selection->Render() | flex, varBut->Render(),
               button_submit->Render(), quitBut->Render()}),
+        tab_content->Render() | flex,
+    });
+  });
+
+  screen.Loop(main_renderer);
+
+  return brandNewCar;
+}
+
+SecondHandCar* regSecondHandCar() {
+  SecondHandCar* brandNewCar = nullptr;
+  auto basicVariant = new VariantManager("Car Variant");
+
+  auto screen = ScreenInteractive::Fullscreen();
+
+  int tab_index = 0;
+  std::vector<std::string> tab_entries = {
+      " Basic Details ",
+      " Variant Details ",
+  };
+
+  std::string colors, prevOwner, yearsUsed;
+
+  std::string modelName, model = "";
+  std::string basePriceStr, mileageStr, powerStr;  // Use strings for input
+  double basePrice, mileage, power;
+  std::string fuelTankCapacity, seatingCapacity, numOfDoors, engineCapacity;
+  std::vector<std::string> cartype = {
+      "COMPACTSUV", "CONVERTIBLE", "DEFAULT", "HATCHBACK", "JEEP",
+      "LIMOUSINE",  "LUXURYCAR",   "SEDAN",   "SPORTS",    "SUV",
+  };
+  std::vector<CarType> ct = {
+      CarType::COMPACTSUV, CarType::CONVERTIBLE, CarType::DEFAULT,
+      CarType::HATCHBACK,  CarType::JEEP,        CarType::LIMOUSINE,
+      CarType::LUXURYCAR,  CarType::SEDAN,       CarType::SPORTS,
+      CarType::SUV,
+  };
+
+  int cartypeIndex = 2;
+
+  Component input_prev_owner = Input(&prevOwner, "Previous Owner");
+  Component input_years_used = Input(&yearsUsed, "Years");
+  input_years_used |= CatchEvent([&](Event event) {
+    return event.is_character() && !std::isdigit(event.character()[0]);
+  });
+
+  Component input_model_name = Input(&modelName, "Model Name");
+  Component input_model = Input(&model, "Model");
+  Component input_colors = Input(&colors, "Car Current Color");
+
+  Component input_base_price = Input(&basePriceStr, "Base Price");
+  input_base_price |= CatchEvent([&](Event event) {
+    if (event.is_character()) {
+      char ch = event.character()[0];
+
+      // Allow digits and a single decimal point
+      if (std::isdigit(ch)) {
+        return false;  // Allow digits
+      } else if (ch == '.') {
+        if (basePriceStr.find('.') != std::string::npos) {
+          return true;
+        }
+        return false;  // Allow the decimal point
+      }
+      return true;  // Ignore other characters
+    }
+    return false;  // Ignore other event types
+  });
+
+  Component input_mileage = Input(&mileageStr, "Mileage");
+  input_mileage |= CatchEvent([&](Event event) {
+    if (event.is_character()) {
+      char ch = event.character()[0];
+
+      if (std::isdigit(ch)) {
+        return false;
+      } else if (ch == '.') {
+        if (mileageStr.find('.') != std::string::npos) {
+          return true;
+        }
+        return false;
+      }
+      return true;
+    }
+    return false;
+  });
+
+  Component input_power = Input(&powerStr, "Power (bhp)");
+  input_power |= CatchEvent([&](Event event) {
+    if (event.is_character()) {
+      char ch = event.character()[0];
+
+      if (std::isdigit(ch)) {
+        return false;
+      } else if (ch == '.') {
+        if (powerStr.find('.') != std::string::npos) {
+          return true;
+        }
+        return false;
+      }
+      return true;
+    }
+    return false;
+  });
+
+  Component input_fuel_tank_capacity =
+      Input(&fuelTankCapacity, "Fuel Tank Capacity (liters)");
+  input_fuel_tank_capacity |= CatchEvent([&](Event event) {
+    if (event.is_character()) {
+      char ch = event.character()[0];
+
+      if (std::isdigit(ch)) {
+        return false;
+      } else if (ch == '.') {
+        if (fuelTankCapacity.find('.') != std::string::npos) {
+          return true;
+        }
+        return false;
+      }
+      return true;
+    }
+    return false;
+  });
+
+  Component input_seating_capacity =
+      Input(&seatingCapacity, "Seating Capacity");
+  input_seating_capacity |= CatchEvent([&](Event event) {
+    return event.is_character() && !std::isdigit(event.character()[0]);
+  });
+
+  Component input_num_of_doors = Input(&numOfDoors, "Number of Doors");
+  input_num_of_doors |= CatchEvent([&](Event event) {
+    return event.is_character() && !std::isdigit(event.character()[0]);
+  });
+  Component input_engine_capacity =
+      Input(&engineCapacity, "Engine Capacity (cc)");
+  input_engine_capacity |= CatchEvent([&](Event event) {
+    if (event.is_character()) {
+      char ch = event.character()[0];
+
+      if (std::isdigit(ch)) {
+        return false;
+      } else if (ch == '.') {
+        if (engineCapacity.find('.') != std::string::npos) {
+          return true;
+        }
+        return false;
+      }
+      return true;
+    }
+    return false;
+  });
+
+  Component dropdown_cartype =
+      Dropdown(&cartype, &cartypeIndex) | size(WIDTH, EQUAL, 30);
+
+  auto style = ButtonOption::Animated(Color::Default, Color::GrayDark,
+                                      Color::Default, Color::White);
+  Component button_submit = Button(
+      "Submit",
+      [&] {
+        basePrice = utils::stod(basePriceStr);
+        mileage = utils::stod(mileageStr);
+        power = utils::stod(powerStr);
+        int d = utils::stoi(numOfDoors);
+        int sc = utils::stoi(seatingCapacity);
+        int fc = utils::stod(fuelTankCapacity);
+        int ec = utils::stod(engineCapacity);
+
+        Car tempCar(modelName, model, ct[cartypeIndex]);
+        tempCar.setBasePrice(basePrice)
+            .setMilagePower(mileage, power)
+            .setDoorSeatingCap(d, sc)
+            .setFuelEngineCap(fc, ec);
+
+        if (!tempCar.isValid()) {
+          return;
+        }
+
+        brandNewCar = new SecondHandCar(tempCar);
+
+        brandNewCar->pushColors(colors);
+        if (!basicVariant->build()) {
+          delete brandNewCar;
+          brandNewCar = nullptr;
+          return;
+        }
+
+        brandNewCar->pushVariant(basicVariant->getVariant());
+        brandNewCar->setCarInfo(prevOwner, utils::stoi(yearsUsed), colors);
+
+        if (!brandNewCar->isValid()) {
+          delete brandNewCar;
+          brandNewCar = nullptr;
+          return;
+        }
+
+        screen.Exit();
+        return;
+      },
+      style);
+
+  auto component = Container::Vertical(
+      {input_model_name, input_model, input_colors, dropdown_cartype,
+       input_base_price, input_mileage, input_power, input_fuel_tank_capacity,
+       input_seating_capacity, input_num_of_doors, input_engine_capacity,
+       input_prev_owner, input_years_used});
+
+  // Render the component
+  auto basicInfoTab = Renderer(component, [&] {
+    return vbox({
+        window(text("Car Info"), vbox({
+                                     hbox(text("Model Name                 : "),
+                                          input_model_name->Render()),
+                                     hbox(text("Model                      : "),
+                                          input_model->Render()),
+                                     hbox(text("Colors                     : "),
+                                          input_colors->Render()),
+                                     hbox(text("Car Type                   : "),
+                                          dropdown_cartype->Render()),
+                                     hbox(text("Base Price                 : "),
+                                          input_base_price->Render()),
+                                     separator(),
+                                     hbox(text("Mileage                    : "),
+                                          input_mileage->Render()),
+                                     hbox(text("Power (bhp)                : "),
+                                          input_power->Render()),
+                                     separator(),
+                                     hbox(text("Fuel Tank Capacity (liters): "),
+                                          input_fuel_tank_capacity->Render()),
+                                     hbox(text("Seating Capacity           : "),
+                                          input_seating_capacity->Render()),
+                                     hbox(text("Number of Doors            : "),
+                                          input_num_of_doors->Render()),
+                                     hbox(text("Engine Capacity (cc)       : "),
+                                          input_engine_capacity->Render()),
+                                 })),
+        hbox({text(" ")}),
+        window(text("Details"), vbox({
+                                    hbox(text("Previous Owner             : "),
+                                         input_prev_owner->Render()),
+                                    hbox(text("Years of Service           : "),
+                                         input_years_used->Render()),
+                                })),
+    });
+  });
+
+  /// Variants Tab
+  auto tab_selection =
+      Menu(&tab_entries, &tab_index, MenuOption::HorizontalAnimated());
+  auto tab_content =
+      Container::Tab({basicInfoTab, basicVariant->getComponent()}, &tab_index);
+
+  // Global Button
+  auto quitBut = Button(" x ", [&] { screen.Exit(); }, style);
+
+  auto main_container = Container::Vertical({
+      Container::Horizontal({tab_selection, button_submit, quitBut}),
+      tab_content,
+  });
+
+  auto main_renderer = Renderer(main_container, [&] {
+    return vbox({
+        text("Register Second Hand Car") | bold | hcenter,
+        hbox({tab_selection->Render() | flex, button_submit->Render(),
+              quitBut->Render()}),
         tab_content->Render() | flex,
     });
   });

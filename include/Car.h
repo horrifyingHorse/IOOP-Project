@@ -148,6 +148,7 @@ class CarVariant {
 
  public:
   friend class NewCar;
+  friend class SecondHandCar;
   friend class SearchResultRender;
   friend class RenderVariant;
 
@@ -187,6 +188,8 @@ class Car {
 
   // bool available;
 
+  static std::string readFile(std::ifstream& f, std::string& line);
+
  public:
   Car(std::string modelName, std::string model, CarType carType);
 
@@ -199,9 +202,6 @@ class Car {
 };
 
 class NewCar : public Car {
- private:
-  static std::string readFile(std::ifstream& f, std::string& line);
-
  protected:
   std::vector<std::string> colors;
   std::vector<CarVariant> variants;
@@ -209,6 +209,7 @@ class NewCar : public Car {
  public:
   friend class CarSearchEngine;
   friend class SearchResultRender;
+
   void display();
 
   NewCar(Car& c);
@@ -225,32 +226,26 @@ class SecondHandCar : public Car {
  protected:
   std::string colors;
   std::string prevOwner;
-  CarVariant* variants;
+  CarVariant* variant;
 
   int yearsUsed;
 
  public:
-  SecondHandCar(std::string modelName, std::string model, CarType carType)
-      : Car(modelName, model, carType),
-        colors("Default"),
-        variants(nullptr),
-        prevOwner("Default"),
-        yearsUsed(INT_MAX)
-  {}
+  friend class CarSearchEngine;
+  friend class SearchResultRender;
 
-  SecondHandCar& pushColors(std::string& color) {
-    this->colors = color;
-    return *this;
-  }
+  SecondHandCar(Car& c);
 
+  SecondHandCar& pushColors(std::string& color);
+  SecondHandCar& pushVariant(CarVariant& variant);
   SecondHandCar& setCarInfo(std::string owner, int yearsUsed,
-                            std::string colors, CarVariant* variants) {
-    this->prevOwner = owner;
-    this->yearsUsed = yearsUsed;
-    this->colors = colors;
-    this->variants = variants;  // Shallow Copy
-    return *this;
-  }
+                            std::string colors);
+
+  bool isValid();
+  void display();
+
+  static std::vector<SecondHandCar>* loadFromDB();
+  static bool storeIntoDB(SecondHandCar* brandNewCar);
 };
 
 #endif  // !CAR_H

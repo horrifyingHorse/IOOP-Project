@@ -3,18 +3,17 @@
 #include <string>
 #include <vector>
 
+#include "../include/UI.h"
 #include "ftxui/component/component.hpp"
 #include "ftxui/component/component_options.hpp"
 #include "ftxui/component/screen_interactive.hpp"
-
-#include "../include/UI.h"
 
 int mainMenuCustomer() {
   using namespace ftxui;
 
   auto screen = ScreenInteractive::Fullscreen();
 
-  std::vector<std::string> entries = {"1. Find Car", "</ Exit"};
+  std::vector<std::string> entries = {"1. Explore New Cars", "2. Explore pre-Owned Cars", "</ Exit"};
   int selected = 0;
 
   MenuOption option;
@@ -76,7 +75,6 @@ int mainMenuEmployee() {
                      menu->Render(),
                  }) |
                  hcenter | center | yflex
-
            }) |
            flex;
   });
