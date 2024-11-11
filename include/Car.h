@@ -170,6 +170,7 @@ class CarVariant {
 };
 
 // Abstract? - No
+// Virtual? - Yes
 class Car {
  protected:
   std::string modelName;
@@ -191,7 +192,11 @@ class Car {
   static std::string readFile(std::ifstream& f, std::string& line);
 
  public:
+  friend class CarSearchEngine;
+  friend class SearchResultRender;
+
   Car(std::string modelName, std::string model, CarType carType);
+  virtual ~Car() = default;
 
   Car& setBasePrice(double& bp);
   Car& setMilagePower(double m, double p);

@@ -54,16 +54,16 @@ void customerProfile(std::vector<NewCar>& inventoryNewCar,
           item.display();
         }
 
-        searchCars(inventoryNewCar);
+        searchCars(inventoryNewCar, inventorySHCar);
         break;
 
-      case 1:
-        for (auto item : inventorySHCar) {
-          item.display();
-        }
-
-        searchCars(inventoryNewCar);
-        break;
+      // case 1:
+      //   for (auto item : inventorySHCar) {
+      //     item.display();
+      //   }
+      //
+      //   searchCars(inventoryNewCar, inventorySHCar);
+      //   break;
 
       default:
         return;

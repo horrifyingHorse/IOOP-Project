@@ -13,7 +13,7 @@ int mainMenuCustomer() {
 
   auto screen = ScreenInteractive::Fullscreen();
 
-  std::vector<std::string> entries = {"1. Explore New Cars", "2. Explore pre-Owned Cars", "</ Exit"};
+  std::vector<std::string> entries = {"1. Explore Cars",  "</ Exit"};
   int selected = 0;
 
   MenuOption option;

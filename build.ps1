@@ -32,7 +32,7 @@ if (!(Get-Command "cmake" -ErrorAction SilentlyContinue)) {
 
 # Change to build directory and run cmake
 Set-Location "./build"
-cmake ..
+cmake -G "MinGW Makefiles" ..
 if ($LASTEXITCODE -ne 0) {
     Write-Output "Quit building due to error;"
     exit 1

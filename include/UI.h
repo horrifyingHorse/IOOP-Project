@@ -18,7 +18,8 @@ int mainMenuCustomer();
 
 NewCar* regCar();
 SecondHandCar* regSecondHandCar();
-int searchCars(std::vector<NewCar>& inventoryNewCar);
+int searchCars(std::vector<NewCar>& inventoryNewCar,
+               std::vector<SecondHandCar>& inventorySHCar);
 
 using namespace ftxui;
 class VariantManager {

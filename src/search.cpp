@@ -1,4 +1,5 @@
 #include <cstdio>
+#include <cstdlib>
 #include <ftxui/component/component.hpp>
 #include <ftxui/component/component_base.hpp>
 #include <ftxui/component/component_options.hpp>
@@ -6,6 +7,7 @@
 #include <ftxui/component/screen_interactive.hpp>
 #include <ftxui/dom/elements.hpp>
 #include <ftxui/dom/node.hpp>
+#include <iostream>
 #include <string>
 #include <vector>
 
@@ -142,54 +144,101 @@ class RenderVariant {
 
 class SearchResultRender {
  public:
-  SearchResultRender(NewCar& car) : item(car) {
+  SearchResultRender(NewCar car) : itemNew(car), itemOld(car) {
     this->colorIndex = 0;
 
     this->colorDropDown =
-        Dropdown(&item.colors, &colorIndex) | size(WIDTH, EQUAL, 20);
+        Dropdown(&itemNew.colors, &colorIndex) | size(WIDTH, EQUAL, 20);
 
     moreInfo = Button(
-        "Know More ", [&] { SearchResultRender::renderInformation(item); },
+        "Know More ", [&] { SearchResultRender::renderInformation(itemNew); },
         ButtonOption::Ascii());
 
     interactiveContainer = Container::Vertical({colorDropDown, moreInfo});
 
     this->basicInfo = Renderer(interactiveContainer, [&] {
       return vbox({
-                 text("Model                 : " + item.model),
+                 text("Model                 : " + itemNew.model),
                  hbox({text("Colors                : "),
                        colorDropDown->Render()}),
                  text("Car Type              : " +
-                      carTypeToString(item.carType)),
+                      carTypeToString(itemNew.carType)),
                  text("Base Price            : " +
-                      utils::dtos((item.basePrice))),
+                      utils::dtos((itemNew.basePrice))),
                  separator(),
                  text("Mileage               : " +
-                      utils::dtos((item.mileage))),
+                      utils::dtos((itemNew.mileage))),
                  text("Power                 : " +
-                      utils::dtos((item.power))),
+                      utils::dtos((itemNew.power))),
                  separator(),
                  text("Fuel Tank Capacity    : " +
-                      utils::dtos((item.fuelTankCapacity))),
+                      utils::dtos((itemNew.fuelTankCapacity))),
                  text("Seating Capacity      : " +
-                      utils::dtos((item.seatingCapacity))),
+                      utils::dtos((itemNew.seatingCapacity))),
                  text("Number of Doors       : " +
-                      utils::dtos((item.numOfDoors))),
+                      utils::dtos((itemNew.numOfDoors))),
                  text("Engine Capacity (cc)  : " +
-                      utils::dtos((item.engineCapacity))),
+                      utils::dtos((itemNew.engineCapacity))),
                  moreInfo->Render() | hcenter,
              }) |
              border | xflex_grow | hcenter;
     });
 
-    collapsible = Collapsible(" " + item.modelName + " ",
+    collapsible = Collapsible(" " + itemNew.modelName + " ",
                               Inner({
                                   this->basicInfo,
                               }));  // | size(WIDTH, LESS_THAN, 20);
 
     this->renderer = Renderer(Container::Vertical({collapsible}), [&] {
       return vbox({collapsible->Render()});
-      // return hbox({collapsible->Render(), text(" " + item.model) | dim});
+      // return hbox({collapsible->Render(), text(" " + itemNew.model) | dim});
+    });
+  }
+
+  SearchResultRender(SecondHandCar car) : itemOld(car), itemNew(car) {
+    this->colorIndex = 0;
+
+    moreInfo = Button(
+        "Know More ", [&] { SearchResultRender::renderInformation(itemOld); },
+        ButtonOption::Ascii());
+
+    interactiveContainer = Container::Vertical({moreInfo});
+
+    this->basicInfo = Renderer(interactiveContainer, [&] {
+      return vbox({
+                 text("Model                 : " + itemOld.model),
+                 hbox({text("Color                 : " + itemOld.colors)}),
+                 text("Car Type              : " +
+                      carTypeToString(itemOld.carType)),
+                 text("Base Price            : " +
+                      utils::dtos((itemOld.basePrice))),
+                 separator(),
+                 text("Mileage               : " +
+                      utils::dtos((itemOld.mileage))),
+                 text("Power                 : " +
+                      utils::dtos((itemOld.power))),
+                 separator(),
+                 text("Fuel Tank Capacity    : " +
+                      utils::dtos((itemOld.fuelTankCapacity))),
+                 text("Seating Capacity      : " +
+                      utils::dtos((itemOld.seatingCapacity))),
+                 text("Number of Doors       : " +
+                      utils::dtos((itemOld.numOfDoors))),
+                 text("Engine Capacity (cc)  : " +
+                      utils::dtos((itemOld.engineCapacity))),
+                 moreInfo->Render() | hcenter,
+             }) |
+             border | xflex_grow | hcenter;
+    });
+
+    collapsible = Collapsible(" " + itemOld.modelName + " ",
+                              Inner({
+                                  this->basicInfo,
+                              }));  // | size(WIDTH, LESS_THAN, 20);
+
+    this->renderer = Renderer(Container::Vertical({collapsible}), [&] {
+      return vbox({collapsible->Render()});
+      // return hbox({collapsible->Render(), text(" " + itemOld.model) | dim});
     });
   }
 
@@ -198,7 +247,8 @@ class SearchResultRender {
  protected:
   int colorIndex;
 
-  NewCar item;
+  NewCar itemNew;
+  SecondHandCar itemOld;
   Component renderer;
 
   Component interactiveContainer;
@@ -294,22 +344,121 @@ class SearchResultRender {
 
     screen.Loop(main_renderer);
   }
+
+  void renderInformation(SecondHandCar& item) {
+    auto screen = ScreenInteractive::Fullscreen();
+    auto style = ButtonOption::Animated(Color::Default, Color::GrayDark,
+                                        Color::Default, Color::White);
+
+    auto basicInfoTab = Renderer([&] {
+      return vbox({
+          window(
+              text("New Car Info"),
+              vbox({
+                  hbox(text("Model Name                 : " + item.model)),
+                  hbox(text("Model                      : " + item.modelName)),
+                  hbox(text("Colors                     : " + item.colors)),
+                  hbox(text("Car Type                   : " +
+                            carTypeToString(item.carType))),
+                  hbox(text("Base Price                 : " +
+                            utils::dtos(item.basePrice))),
+                  separator(),
+                  hbox(text("Mileage                    : " +
+                            utils::dtos(item.mileage))),
+                  hbox(text("Power (bhp)                : " +
+                            utils::dtos(item.power))),
+                  separator(),
+                  hbox(text("Fuel Tank Capacity (liters): " +
+                            utils::dtos(item.fuelTankCapacity))),
+                  hbox(text("Seating Capacity           : " +
+                            utils::dtos(item.seatingCapacity))),
+                  hbox(text("Number of Doors            : " +
+                            utils::dtos(item.numOfDoors))),
+                  hbox(text("Engine Capacity (cc)       : " +
+                            utils::dtos(item.engineCapacity))),
+
+              })),
+
+          hbox({text(" ")}),
+          window(
+              text("Details"),
+              vbox({
+                  hbox(text("Previous Owner             : " + item.prevOwner)),
+                  hbox(text("Years of Service           : " +
+                            utils::itos(item.yearsUsed) + " yr")),
+              })),
+
+      });
+    });
+
+    auto quitBut = Button(" x ", [&] { screen.Exit(); }, style);
+
+    int tab_index = 0;
+    std::vector<std::string> tab_entries = {" Basic Details "};
+    std::vector<Component> tabs = {basicInfoTab};
+    std::vector<RenderVariant> vars = {};
+
+    tab_entries.push_back(" " + item.variant->variantName + " ");
+
+    RenderVariant* newVariant = new RenderVariant(*item.variant);
+    vars.push_back(*newVariant);
+    tabs.push_back(newVariant->getComponent());
+
+    auto tab_selection =
+        Menu(&tab_entries, &tab_index, MenuOption::HorizontalAnimated());
+
+    auto tab_content = Container::Tab(tabs, &tab_index);
+
+    auto main_container = Container::Vertical({
+        Container::Horizontal({tab_selection, quitBut}),
+        tab_content,
+    });
+
+    auto main_renderer = Renderer(main_container, [&] {
+      return vbox({
+          text(item.modelName + " Details") | bold | hcenter,
+          hbox({tab_selection->Render() | flex, quitBut->Render()}),
+          tab_content->Render() | flex,
+      });
+    });
+
+    screen.Loop(main_renderer);
+  }
 };
 
 class CarSearchEngine {
  public:
-  CarSearchEngine(std::vector<NewCar> inventoryNewCar, Component* renderer)
+  CarSearchEngine(std::vector<NewCar> inventoryNewCar,
+                  std::vector<SecondHandCar> inventorySHCar,
+                  Component* renderer)
       : inventoryNewCar(inventoryNewCar),
+        inventorySHCar(inventorySHCar),
+        mode(0),
         renderer(renderer),
-        resultVector({}),
+        resultNewVector({}),
+        resultSHVector({}),
+        modelNameStr(""),
         modelNameLen(0) {}
 
   Component* render() {
     (*renderer)->DetachAllChildren();
 
-    for (auto car : resultVector) {
-      SearchResultRender* r = new SearchResultRender(car);
-      (*renderer)->Add(r->getComponent());
+    switch (this->mode) {
+      case 0: {
+        for (auto car : resultNewVector) {
+          SearchResultRender* r = new SearchResultRender(car);
+          (*renderer)->Add(r->getComponent());
+        }
+        break;
+      }
+
+      case 1: {
+        for (auto car : resultSHVector) {
+          SearchResultRender* r = new SearchResultRender(car);
+          (*renderer)->Add(r->getComponent());
+        }
+        break;
+      }
     }
 
     return this->renderer;
@@ -319,49 +468,110 @@ class CarSearchEngine {
     utils::trim(s);
     utils::toLowerCase(s);
 
-    if (s.length() <= this->modelNameLen) resultVector.clear();
-
-    if (!resultVector.empty()) {
-      for (auto it = resultVector.begin(); it != resultVector.end();) {
-        std::string cmpStr = it->modelName;
-        std::string cmpStr2 = it->model;
-        if (utils::toLowerCase(cmpStr).find(s) == std::string::npos &&
-            utils::toLowerCase(cmpStr2).find(s) == std::string::npos)
-          it = resultVector.erase(it);
-        else
-          ++it;
-      }
-    } else {
-      for (auto car : inventoryNewCar) {
-        std::string cmpStr = car.modelName;
-        std::string cmpStr2 = car.model;
-        if (utils::toLowerCase(cmpStr).find(s) != std::string::npos ||
-            utils::toLowerCase(cmpStr2).find(s) != std::string::npos) {
-          resultVector.push_back(car);
+    switch (this->mode) {
+      case 0: {
+        if (s.length() <= this->modelNameLen) resultNewVector.clear();
+        if (!resultNewVector.empty()) {
+          for (auto it = resultNewVector.begin();
+               it != resultNewVector.end();) {
+            std::string cmpStr = it->modelName;
+            std::string cmpStr2 = it->model;
+            if (utils::toLowerCase(cmpStr).find(s) == std::string::npos &&
+                utils::toLowerCase(cmpStr2).find(s) == std::string::npos)
+              it = resultNewVector.erase(it);
+            else
+              ++it;
+          }
+        } else {
+          for (auto car : inventoryNewCar) {
+            std::string cmpStr = car.modelName;
+            std::string cmpStr2 = car.model;
+            if (utils::toLowerCase(cmpStr).find(s) != std::string::npos ||
+                utils::toLowerCase(cmpStr2).find(s) != std::string::npos) {
+              resultNewVector.push_back(car);
+            }
+          }
         }
+        break;
       }
+
+      case 1:
+        if (s.length() <= this->modelNameLen) resultSHVector.clear();
+        if (!resultSHVector.empty()) {
+          for (auto it = resultSHVector.begin(); it != resultSHVector.end();) {
+            std::string cmpStr = it->modelName;
+            std::string cmpStr2 = it->model;
+            if (utils::toLowerCase(cmpStr).find(s) == std::string::npos &&
+                utils::toLowerCase(cmpStr2).find(s) == std::string::npos)
+              it = resultSHVector.erase(it);
+            else
+              ++it;
+          }
+        } else {
+          for (auto car : inventorySHCar) {
+            std::string cmpStr = car.modelName;
+            std::string cmpStr2 = car.model;
+            if (utils::toLowerCase(cmpStr).find(s) != std::string::npos ||
+                utils::toLowerCase(cmpStr2).find(s) != std::string::npos) {
+              resultSHVector.push_back(car);
+            }
+          }
+        }
+        break;
     }
 
     this->modelNameLen = s.length();
+    this->modelNameStr = s;
 
+    return *this;
+  }
+
+  CarSearchEngine& setMode(int mode) {
+    resultNewVector.clear();
+    resultSHVector.clear();
+
+    this->mode = mode;
+    this->modelName(this->modelNameStr);
+    this->render();
     return *this;
   }
 
  protected:
   std::vector<NewCar> inventoryNewCar;
-  std::vector<NewCar> resultVector;
+  std::vector<SecondHandCar> inventorySHCar;
+
+  std::vector<NewCar> resultNewVector;
+  std::vector<SecondHandCar> resultSHVector;
+
+  std::string modelNameStr;
 
   Component* renderer;
 
   int modelNameLen;
+  int mode;
 };
 
-int searchCars(std::vector<NewCar>& inventoryNewCar) {
+int searchCars(std::vector<NewCar>& inventoryNewCar,
+               std::vector<SecondHandCar>& inventorySHCar) {
   auto screen = ScreenInteractive::Fullscreen();
 
   auto searchResults = Container::Vertical({});
 
-  CarSearchEngine engine(inventoryNewCar, &searchResults);
+  std::vector<std::vector<Car*>> c;
+  std::vector<Car*> newC;
+  std::vector<Car*> oldC;
+
+  for (auto car : inventoryNewCar) {
+    newC.push_back(&car);
+  }
+  for (auto car : inventorySHCar) {
+    oldC.push_back(&car);
+  }
+  c.push_back(newC);
+  c.push_back(oldC);
+
+  CarSearchEngine engine(inventoryNewCar, inventorySHCar, &searchResults);
+  // CarSearchEngine engine(c, &searchResults);
 
   /* Implement Search for:
    * [√] Model Name
@@ -379,11 +589,45 @@ int searchCars(std::vector<NewCar>& inventoryNewCar) {
                                       Color::Default, Color::White);
   auto quitBut = Button(" x ", [&] { screen.Exit(); }, style);
 
-  Component input_model_name =
-      Input(&modelName, "Model Name or Model", InputOption{.on_change = [&]() {
-        engine.modelName(modelName);
-        engine.render();
-      }});
+  int indexUsage = 0;
+  std::vector<std::string> usage = {"Brand New Cars", "Pre-Owned Cars"};
+  auto usageDropdown = Dropdown(&usage, &indexUsage) | size(WIDTH, EQUAL, 20);
+  // auto usageDropdown = Dropdown({
+  //     .radiobox = {.entries = &usage},
+  //     .transform =
+  //         [](bool open, Element checkbox, Element radiobox) {
+  //           if (open) {
+  //             return vbox({
+  //                 checkbox | inverted,
+  //                 radiobox | vscroll_indicator | frame |
+  //                     size(HEIGHT, LESS_THAN, 10),
+  //                 filler(),
+  //             });
+  //           }
+  //           return vbox({
+  //               checkbox,
+  //               filler(),
+  //           });
+  //         },
+  // });
+
+  Component applyButton = Button(
+      " Apply ",
+      [&] {
+        engine.setMode(indexUsage);
+        std::cout << indexUsage;
+      },
+      style);
+
+  Component input_model_name = Input(&modelName, "Model Name or Model",
+                                     InputOption{
+                                         .multiline = false,
+                                         .on_change =
+                                             [&]() {
+                                               engine.modelName(modelName);
+                                               engine.render();
+                                             },
+                                     });
 
   // input_model_name |= CatchEvent([&](Event event) {
   //   if (event.is_character()) {
@@ -395,11 +639,11 @@ int searchCars(std::vector<NewCar>& inventoryNewCar) {
 
   auto searchParams = Container::Horizontal({
       input_model_name,
-
   });
 
   auto mainContainer = Container::Vertical({
       quitBut,
+      Container::Horizontal({usageDropdown, applyButton}),
       searchParams,
       searchResults,
 
@@ -412,10 +656,14 @@ int searchCars(std::vector<NewCar>& inventoryNewCar) {
                    text("Search Car per Your Needs!") | bold | hcenter | flex,
                    quitBut->Render(),
                }),
-               separatorDashed(),
-               hbox({text("")}),
+               // separatorDashed(),
+               // hbox({text("")}),
 
                vbox({
+                   hbox({
+                       usageDropdown->Render(),
+                       applyButton->Render(),
+                   }),
                    hbox({
                        text("Model Name: "),
                        input_model_name->Render() | size(WIDTH, EQUAL, 20) |
