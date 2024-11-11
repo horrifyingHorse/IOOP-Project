@@ -1,5 +1,4 @@
-#!/bin/sh
-
+#!/bin/bash
 buildOnly=false
 
 if [ $# -ge 1 ]; then
