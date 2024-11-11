@@ -1,4 +1,4 @@
 classes:
-1. Penetration 🥵 -- high hopes
+
 2. Manager
 3. Employee
