@@ -1,4 +1,34 @@
 #include "../include/UI.h"
+#include "../include/Humans.h"
+
+void managerProfile(std::vector<NewCar>& inventoryNewCar,
+                    std::vector<SecondHandCar>& inventorySHCar) {
+  Manager arpit;
+  if (!managerLogin(arpit)) return;
+
+  while (1) {
+    int option = mainMenuManager();
+
+    switch (option) {
+      case 0: {
+        addEmployee(arpit);
+        break;
+      }
+
+      case 1: {
+        removeEmployee(arpit);
+        break;
+      }
+
+      default:
+        return;
+        break;
+    }
+    // std::cin.clear();
+    // fflush(stdin);
+    // char c = getchar();
+  }
+}
 
 void employeeProfile(std::vector<NewCar>& inventoryNewCar,
                      std::vector<SecondHandCar>& inventorySHCar) {
@@ -57,13 +87,13 @@ void customerProfile(std::vector<NewCar>& inventoryNewCar,
         searchCars(inventoryNewCar, inventorySHCar);
         break;
 
-      // case 1:
-      //   for (auto item : inventorySHCar) {
-      //     item.display();
-      //   }
-      //
-      //   searchCars(inventoryNewCar, inventorySHCar);
-      //   break;
+        // case 1:
+        //   for (auto item : inventorySHCar) {
+        //     item.display();
+        //   }
+        //
+        //   searchCars(inventoryNewCar, inventorySHCar);
+        //   break;
 
       default:
         return;

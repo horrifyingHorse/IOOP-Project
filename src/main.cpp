@@ -24,12 +24,16 @@ int main() {
   while (1) {
     int usrProfile = profileSelect();
     switch (usrProfile) {
-      case 0:
+      case 0:  // Customer
         customerProfile(inventoryNewCar, inventorySHCar);
         break;
 
-      case 1:
+      case 1:  // Employee
         employeeProfile(inventoryNewCar, inventorySHCar);
+        break;
+
+      case 2:  // Manager
+        managerProfile(inventoryNewCar, inventorySHCar);
         break;
 
       default:

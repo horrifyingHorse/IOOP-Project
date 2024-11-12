@@ -19,6 +19,8 @@ std::string trim(std::string& s);
 std::string itos(int n);
 std::string dtos(double n);
 
+std::string to50(std::pair<std::string, std::string>& p);
+
 }  // namespace utils
 
 #endif  // !UTILS_H

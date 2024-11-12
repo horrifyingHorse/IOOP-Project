@@ -59,3 +59,22 @@ std::string utils::dtos(double n) {
 }
 
 std::string utils::itos(int n) { return std::to_string(n); }
+
+std::string utils::to50(std::pair<std::string, std::string>& p) {
+  if (p.first.length() + p.second.length() >= 50) return p.first + p.second;
+
+  std::string retStr = "";
+  int len = 50 - p.first.length() - p.second.length();
+
+  retStr = p.first;
+  for (int i = 0; i < len / 2 - 3; i++) {
+    retStr += " ";
+  }
+
+  retStr += p.second;
+  for (int i = 0; i < len / 2 - 3; i++) {
+    retStr += " ";
+  }
+
+  return retStr;
+}

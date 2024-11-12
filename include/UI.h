@@ -2,11 +2,18 @@
 #define UI_H
 
 #include "Car.h"
+#include "Humans.h"
 #include "ftxui/component/component.hpp"
 #include "ftxui/component/screen_interactive.hpp"
 #include "utils.h"
 
 int profileSelect();
+
+bool managerLogin(Manager& m);
+
+void managerProfile(std::vector<NewCar>& inventoryNewCar,
+                    std::vector<SecondHandCar>& inventorySHCar);
+int mainMenuManager();
 
 void employeeProfile(std::vector<NewCar>& inventoryNewCar,
                      std::vector<SecondHandCar>& inventorySHCar);
@@ -15,6 +22,9 @@ int mainMenuEmployee();
 void customerProfile(std::vector<NewCar>& inventoryNewCar,
                      std::vector<SecondHandCar>& inventorySHCar);
 int mainMenuCustomer();
+
+void addEmployee(Manager& m);
+void removeEmployee(Manager& m);
 
 NewCar* regCar();
 SecondHandCar* regSecondHandCar();
