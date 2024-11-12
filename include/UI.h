@@ -26,6 +26,9 @@ int mainMenuCustomer();
 void addEmployee(Manager& m);
 void removeEmployee(Manager& m);
 
+void buyCar(NewCar& c);
+void buyCar(SecondHandCar& c);
+
 NewCar* regCar();
 SecondHandCar* regSecondHandCar();
 int searchCars(std::vector<NewCar>& inventoryNewCar,

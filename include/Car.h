@@ -154,6 +154,8 @@ class CarVariant {
 
   void display();
 
+  std::string getName();
+
   bool isValid();
 
   CarVariant(std::string variantName, double price);
@@ -214,6 +216,7 @@ class NewCar : public Car {
  public:
   friend class CarSearchEngine;
   friend class SearchResultRender;
+  friend void buyCar(NewCar& c);
 
   void display();
 
@@ -238,6 +241,7 @@ class SecondHandCar : public Car {
  public:
   friend class CarSearchEngine;
   friend class SearchResultRender;
+  friend void buyCar(SecondHandCar& c);
 
   SecondHandCar(Car& c);
 

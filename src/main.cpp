@@ -5,6 +5,9 @@
 
 #include "../include/Car.h"
 #include "../include/UI.h"
+#include "../include/Humans.h"
+
+int Customer::billNo = 0;
 
 int main() {
   std::vector<NewCar> inventoryNewCar;

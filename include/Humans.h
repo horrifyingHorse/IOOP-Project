@@ -2,8 +2,12 @@
 #define HUMANS
 
 #include <fstream>
+#include <iomanip>
 #include <ios>
 #include <iostream>
+#include <random>
+#include <sstream>
+#include <string>
 #include <vector>
 
 using namespace std;
@@ -159,6 +163,94 @@ class Manager {
     }
 
     return employees;
+  }
+};
+
+class Customer {
+ public:
+  string name;
+  string address;
+  string phoneNumber;
+  string email;
+  string carModel;
+  string color;
+  string carVariant;
+
+  bool isPreOwned;
+  string prevOwner;
+
+  static int billNo;  // Static member for bill number
+
+  Customer(string n = "", string addr = "", string phone = "",
+           string email = "", string model = "", string color = "",
+           string brand = "")
+      : name(n),
+        address(addr),
+        phoneNumber(phone),
+        email(email),
+        carModel(model),
+        color(color),
+        carVariant(brand),
+        isPreOwned(false),
+        prevOwner("x0428") {}
+
+  static int generateBillNo() {
+    random_device rd;
+    mt19937 gen(rd());
+    uniform_int_distribution<> dis(100000, 999999);  // 6-digit number
+    return dis(gen);
+  }
+
+  static void initializeBillNo() {
+    if (billNo == 0) {
+      billNo = generateBillNo();  // Initialize if not set yet
+    }
+  }
+  void setPreOwned(string prevOwner) {
+    this->isPreOwned = true;
+    this->prevOwner = prevOwner;
+  }
+
+  void updateDetails(const string& n, const string& addr, const string& phone,
+                     const string& email, const string& model,
+                     const string& color, const string& brand) {
+    name = n;
+    address = addr;
+    phoneNumber = phone;
+    this->email = email;
+    carModel = model;
+    this->color = color;
+    carVariant = brand;
+  }
+
+  static bool isValid(const Customer& c) {
+    return !c.name.empty() && !c.address.empty() && !c.phoneNumber.empty() &&
+           !c.email.empty() && !c.carModel.empty() && !c.color.empty() &&
+           !c.carVariant.empty();
+  }
+
+  static void storeReceipt(const Customer& c) {
+    initializeBillNo();  // Ensure billNo is initialized
+    string filename = "./db/reciept/" + to_string(billNo) + ".txt";
+
+    if (c.isPreOwned) {
+      filename = "./db/reciept/preowned/" + to_string(billNo) + ".txt";
+    }
+
+    ofstream file(filename);
+    if (file.is_open()) {
+      if (c.prevOwner != "x0428") file << c.prevOwner << endl;
+      file << billNo << endl;
+      file << c.name << endl;
+      file << c.address << endl;
+      file << c.phoneNumber << endl;
+      file << c.email << endl;
+      file << c.carModel << endl;
+      file << c.color << endl;
+      file << c.carVariant << endl;
+      file.close();
+      cout << filename << endl;
+    }
   }
 };
 

@@ -151,10 +151,15 @@ class SearchResultRender {
         Dropdown(&itemNew.colors, &colorIndex) | size(WIDTH, EQUAL, 20);
 
     moreInfo = Button(
-        "Know More ", [&] { SearchResultRender::renderInformation(itemNew); },
+        " Know More ", [&] { SearchResultRender::renderInformation(itemNew); },
         ButtonOption::Ascii());
 
-    interactiveContainer = Container::Vertical({colorDropDown, moreInfo});
+    // skibidi
+    buyButton =
+        Button(" Buy ", [&] { buyCar(itemNew); }, ButtonOption::Ascii());
+
+    interactiveContainer = Container::Vertical(
+        {colorDropDown, Container::Horizontal({moreInfo, buyButton})});
 
     this->basicInfo = Renderer(interactiveContainer, [&] {
       return vbox({
@@ -179,7 +184,11 @@ class SearchResultRender {
                       utils::dtos((itemNew.numOfDoors))),
                  text("Engine Capacity (cc)  : " +
                       utils::dtos((itemNew.engineCapacity))),
-                 moreInfo->Render() | hcenter,
+                 hbox({
+                     moreInfo->Render(),
+                     buyButton->Render(),
+
+                 }) | hcenter,
              }) |
              border | xflex_grow | hcenter;
     });
@@ -202,7 +211,16 @@ class SearchResultRender {
         "Know More ", [&] { SearchResultRender::renderInformation(itemOld); },
         ButtonOption::Ascii());
 
-    interactiveContainer = Container::Vertical({moreInfo});
+    // skibidi
+    buyButton =
+        Button(" Buy ", [&] { buyCar(itemOld); }, ButtonOption::Ascii());
+
+    interactiveContainer = Container::Vertical({
+      Container::Horizontal({
+        moreInfo,
+        buyButton
+      })
+    });
 
     this->basicInfo = Renderer(interactiveContainer, [&] {
       return vbox({
@@ -226,7 +244,11 @@ class SearchResultRender {
                       utils::dtos((itemOld.numOfDoors))),
                  text("Engine Capacity (cc)  : " +
                       utils::dtos((itemOld.engineCapacity))),
-                 moreInfo->Render() | hcenter,
+                 hbox({
+                     moreInfo->Render(),
+                     buyButton->Render(),
+
+                 }) | hcenter,
              }) |
              border | xflex_grow | hcenter;
     });
@@ -238,7 +260,6 @@ class SearchResultRender {
 
     this->renderer = Renderer(Container::Vertical({collapsible}), [&] {
       return vbox({collapsible->Render()});
-      // return hbox({collapsible->Render(), text(" " + itemOld.model) | dim});
     });
   }
 
@@ -258,6 +279,7 @@ class SearchResultRender {
   Component collapsible;
 
   Component moreInfo;
+  Component buyButton;
 
   Component Inner(std::vector<Component> children) {
     Component vlist = Container::Vertical(std::move(children));
@@ -311,6 +333,8 @@ class SearchResultRender {
 
     auto quitBut = Button(" x ", [&] { screen.Exit(); }, style);
 
+    auto buyButton = Button(" Buy ", [&] { buyCar(item); }, style);
+
     int tab_index = 0;
     std::vector<std::string> tab_entries = {" Basic Details "};
     std::vector<Component> tabs = {basicInfoTab};
@@ -330,14 +354,15 @@ class SearchResultRender {
     auto tab_content = Container::Tab(tabs, &tab_index);
 
     auto main_container = Container::Vertical({
-        Container::Horizontal({tab_selection, quitBut}),
+        Container::Horizontal({tab_selection, buyButton, quitBut}),
         tab_content,
     });
 
     auto main_renderer = Renderer(main_container, [&] {
       return vbox({
           text(item.modelName + " Details") | bold | hcenter,
-          hbox({tab_selection->Render() | flex, quitBut->Render()}),
+          hbox({tab_selection->Render() | flex, buyButton->Render(),
+                quitBut->Render()}),
           tab_content->Render() | flex,
       });
     });
