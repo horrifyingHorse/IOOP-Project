@@ -1,4 +1,0 @@
-0 Mustang 1 55000 yuva 2024 11 11
-1 Mustang 1 55000 yuva 2024 11 11
-1 Model X 1 75000 yuva 2024 11 11
-0 Civic 1 25000 asv 2024 11 11

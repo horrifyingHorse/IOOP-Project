@@ -13,7 +13,7 @@ int mainMenuCustomer() {
 
   auto screen = ScreenInteractive::Fullscreen();
 
-  std::vector<std::string> entries = {"1. Explore Cars",  "</ Exit"};
+  std::vector<std::string> entries = {"1. Explore Cars", "</ Exit"};
   int selected = 0;
 
   MenuOption option;
@@ -74,8 +74,7 @@ int mainMenuEmployee() {
     return vbox({vbox({
                      menu->Render(),
                  }) |
-                 hcenter | center | yflex
-           }) |
+                 hcenter | center | yflex}) |
            flex;
   });
 
@@ -83,7 +82,6 @@ int mainMenuEmployee() {
 
   return selected;
 }
-
 
 int mainMenuManager() {
   using namespace ftxui;
@@ -113,8 +111,7 @@ int mainMenuManager() {
     return vbox({vbox({
                      menu->Render(),
                  }) |
-                 hcenter | center | yflex
-           }) |
+                 hcenter | center | yflex}) |
            flex;
   });
 
