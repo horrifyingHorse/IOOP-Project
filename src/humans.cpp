@@ -1,5 +1,5 @@
 #include "../include/Humans.h"
-
+#include<regex>
 int Employee::count = 0;
 
 Employee::Employee() {}
@@ -193,9 +193,29 @@ void Customer::updateDetails(const string& n, const string& addr,
 }
 
 bool Customer::isValid(const Customer& c) {
-  return !c.name.empty() && !c.address.empty() && !c.phoneNumber.empty() &&
-         !c.email.empty() && !c.carModel.empty() && !c.color.empty() &&
-         !c.carVariant.empty();
+  // Phone number should be exactly 10 digits
+  if (c.phoneNumber.length() != 10 || !all_of(c.phoneNumber.begin(), c.phoneNumber.end(), ::isdigit)) {
+    cout << "Invalid phone number. It must be exactly 10 digits.\n";
+    return false;
+  }
+
+  // Email validation using regex
+  const regex emailPattern(R"((\w+)(\.|\w)*@(\w+)(\.\w+)+)");
+  if (!regex_match(c.email, emailPattern)) {
+    cout << "Invalid email address format.\n";
+    return false;
+  }
+
+  // Check if any required field is empty
+  bool isValid = !c.name.empty() && !c.address.empty() && !c.phoneNumber.empty() &&
+                 !c.email.empty() && !c.carModel.empty() && !c.color.empty() &&
+                 !c.carVariant.empty();
+
+  if (!isValid) {
+    cout << "One or more required fields are empty.\n";
+  }
+
+  return isValid;
 }
 
 void Customer::storeReceipt(const Customer& c) {
