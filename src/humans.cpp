@@ -1,39 +1,19 @@
 #include "../include/Humans.h"
-#include<regex>
+
+#include <regex>
+#include <string>
+#include <vector>
+
+#include "../include/utils.h"
 int Employee::count = 0;
+int Customer::billNo = 0;
 
 Employee::Employee() {}
 Employee::Employee(string empName, int empId) : name(empName), id(empId) {}
 
 string Employee::getName() { return name; }
+
 int Employee::getId() { return id; }
-
-void Employee::viewSales() {
-  ifstream file("./db/sales.txt");
-  int empId, numCars, year, month, day;
-  string carModel;
-  double totalAmount;
-  bool hasSales = false;
-
-  if (file.is_open()) {
-    cout << "Sales for Employee ID: " << id << "\n";
-    while (file >> empId >> carModel >> numCars >> totalAmount >> year >>
-           month >> day) {
-      if (empId == id) {
-        cout << "Car Model: " << carModel << ", Date: " << day << "/" << month
-             << "/" << year << ", Cars Sold: " << numCars << ", Total Amount: $"
-             << totalAmount << endl;
-        hasSales = true;
-      }
-    }
-    if (!hasSales) {
-      cout << "No sales records found.\n";
-    }
-    file.close();
-  } else {
-    cout << "Error opening sales file.\n";
-  }
-}
 
 Manager::Manager() : managerName(""), managerPassword(""), isLoggedIn(false) {}
 
@@ -78,44 +58,24 @@ void Manager::removeEmployee(string empID) {
     remove("./db/employees.txt");
     rename("./db/temp.txt", "./db/employees.txt");
 
-    if (found) {
-      cout << "Employee removed successfully.\n";
-    } else {
-      cout << "Employee ID not found.\n";
-    }
   } else {
     cout << "Error opening file.\n";
   }
 }
 
-void Manager::viewSalesStats() {
-  if (!isLoggedIn) return;
+// void Manager::viewSalesStats() {
+//   auto screen = ScreenInteractive::Fullscreen();
+//
+//   Component main_renderer = Renderer([&] {
+//     return vbox({
+//
+//            }) |
+//            flex;
+//   });
+// }
 
-  ifstream file("./db/sales.txt");
-  int empId, numCars, year, month, day;
-  string carModel;
-  double totalAmount;
-  int totalCars = 0;
-  double totalSales = 0;
-  bool hasRecords = false;
-
-  if (file.is_open()) {
-    while (file >> empId >> carModel >> numCars >> totalAmount >> year >>
-           month >> day) {
-      totalCars += numCars;
-      totalSales += totalAmount;
-      hasRecords = true;
-    }
-    file.close();
-    if (hasRecords) {
-      cout << "\nTotal Cars Sold: " << totalCars << endl;
-      cout << "Total Sales Amount: $" << totalSales << endl;
-    } else {
-      cout << "No sales records found.\n";
-    }
-  } else {
-    cout << "Error opening sales file.\n";
-  }
+void Manager::viewSalesStats(Manager& m) {
+  if (!m.isLoggedIn) return;
 }
 
 vector<pair<string, string>> Manager::getAllEmployees() {
@@ -135,8 +95,6 @@ vector<pair<string, string>> Manager::getAllEmployees() {
 
   return employees;
 }
-
-int Customer::billNo = 0;
 
 Customer::Customer()
     : name(""),
@@ -182,7 +140,7 @@ void Customer::setPreOwned(string prevOwner) {
 void Customer::updateDetails(const string& n, const string& addr,
                              const string& phone, const string& email,
                              const string& model, const string& color,
-                             const string& brand) {
+                             const string& brand, const double& price) {
   name = n;
   address = addr;
   phoneNumber = phone;
@@ -190,36 +148,35 @@ void Customer::updateDetails(const string& n, const string& addr,
   carModel = model;
   this->color = color;
   carVariant = brand;
+  this->price = price;
 }
 
 bool Customer::isValid(const Customer& c) {
   // Phone number should be exactly 10 digits
-  if (c.phoneNumber.length() != 10 || !all_of(c.phoneNumber.begin(), c.phoneNumber.end(), ::isdigit)) {
-    cout << "Invalid phone number. It must be exactly 10 digits.\n";
+  if (c.phoneNumber.length() != 10 ||
+      !all_of(c.phoneNumber.begin(), c.phoneNumber.end(), ::isdigit)) {
+    // cout << "Invalid phone number. It must be exactly 10 digits.\n";
     return false;
   }
 
   // Email validation using regex
   const regex emailPattern(R"((\w+)(\.|\w)*@(\w+)(\.\w+)+)");
   if (!regex_match(c.email, emailPattern)) {
-    cout << "Invalid email address format.\n";
+    // cout << "Invalid email address format.\n";
     return false;
   }
 
   // Check if any required field is empty
-  bool isValid = !c.name.empty() && !c.address.empty() && !c.phoneNumber.empty() &&
-                 !c.email.empty() && !c.carModel.empty() && !c.color.empty() &&
-                 !c.carVariant.empty();
-
-  if (!isValid) {
-    cout << "One or more required fields are empty.\n";
-  }
+  bool isValid = !c.name.empty() && !c.address.empty() &&
+                 !c.phoneNumber.empty() && !c.email.empty() &&
+                 !c.carModel.empty() && !c.color.empty() &&
+                 !c.carVariant.empty() && (c.price > 0);
 
   return isValid;
 }
 
 void Customer::storeReceipt(const Customer& c) {
-  initializeBillNo();  // Ensure billNo is initialized
+  initializeBillNo();
   string filename = "./db/reciept/" + to_string(billNo) + ".txt";
 
   if (c.isPreOwned) {
@@ -230,6 +187,7 @@ void Customer::storeReceipt(const Customer& c) {
   if (file.is_open()) {
     if (c.prevOwner != "x0428") file << c.prevOwner << endl;
     file << billNo << endl;
+    file << utils::currentDate() << endl;
     file << c.name << endl;
     file << c.address << endl;
     file << c.phoneNumber << endl;
@@ -237,7 +195,8 @@ void Customer::storeReceipt(const Customer& c) {
     file << c.carModel << endl;
     file << c.color << endl;
     file << c.carVariant << endl;
+    file << c.price << endl;
     file.close();
-    cout << filename << endl;
+    // cout << filename << endl;
   }
 }

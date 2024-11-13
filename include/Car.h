@@ -155,6 +155,7 @@ class CarVariant {
   void display();
 
   std::string getName();
+  double getPrice();
 
   bool isValid();
 

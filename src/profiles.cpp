@@ -1,5 +1,5 @@
-#include "../include/UI.h"
 #include "../include/Humans.h"
+#include "../include/UI.h"
 
 void managerProfile(std::vector<NewCar>& inventoryNewCar,
                     std::vector<SecondHandCar>& inventorySHCar) {
@@ -17,6 +17,11 @@ void managerProfile(std::vector<NewCar>& inventoryNewCar,
 
       case 1: {
         removeEmployee(arpit);
+        break;
+      }
+
+      case 2: {
+        managerSalesView(arpit);
         break;
       }
 
@@ -75,33 +80,5 @@ void employeeProfile(std::vector<NewCar>& inventoryNewCar,
 
 void customerProfile(std::vector<NewCar>& inventoryNewCar,
                      std::vector<SecondHandCar>& inventorySHCar) {
-  while (1) {
-    int option = mainMenuCustomer();
-
-    switch (option) {
-      case 0:
-        for (auto item : inventoryNewCar) {
-          item.display();
-        }
-
-        searchCars(inventoryNewCar, inventorySHCar);
-        break;
-
-        // case 1:
-        //   for (auto item : inventorySHCar) {
-        //     item.display();
-        //   }
-        //
-        //   searchCars(inventoryNewCar, inventorySHCar);
-        //   break;
-
-      default:
-        return;
-        break;
-    }
-
-    // std::cin.clear();
-    // fflush(stdin);
-    // char c = getchar();
-  }
+  searchCars(inventoryNewCar, inventorySHCar);
 }

@@ -10,18 +10,19 @@
 int profileSelect();
 
 bool managerLogin(Manager& m);
-
 void managerProfile(std::vector<NewCar>& inventoryNewCar,
                     std::vector<SecondHandCar>& inventorySHCar);
 int mainMenuManager();
+void managerSalesView(Manager& m);
+void managerSalesViewExpand(Customer& c);
 
+int mainMenuEmployee();
 void employeeProfile(std::vector<NewCar>& inventoryNewCar,
                      std::vector<SecondHandCar>& inventorySHCar);
-int mainMenuEmployee();
 
+int mainMenuCustomer();
 void customerProfile(std::vector<NewCar>& inventoryNewCar,
                      std::vector<SecondHandCar>& inventorySHCar);
-int mainMenuCustomer();
 
 void addEmployee(Manager& m);
 void removeEmployee(Manager& m);
@@ -118,7 +119,88 @@ class VariantManager {
   Component tab_content;
   Component main_container;
   Component airBagToggle;
-  Component renderer;  // Renderer for the variant manager
+  Component renderer;
+};
+
+class RenderVariant {
+ public:
+  RenderVariant(CarVariant itemV);
+  Component getComponent();
+
+ protected:
+  int feature_index;
+
+  CarVariant itemVariant;
+
+  Component feature_tabs;
+  Component safetyFeatTabs;
+  Component comfortFeatTabs;
+  Component technicalFeatTabs;
+  Component buildFeatTabs;
+
+  Component tab_content;
+  Component main_container;
+
+  Component renderer;
+
+  static std::vector<std::string> feature_entries;
+};
+
+class SearchResultRender {
+ public:
+  SearchResultRender(NewCar car);
+  SearchResultRender(SecondHandCar car);
+  Component& getComponent();
+
+ protected:
+  int colorIndex;
+
+  NewCar itemNew;
+  SecondHandCar itemOld;
+  Component renderer;
+
+  Component interactiveContainer;
+
+  Component basicInfo;
+  Component colorDropDown;
+  Component collapsible;
+
+  Component moreInfo;
+  Component buyButton;
+
+  Component Inner(std::vector<Component> children);
+
+  Component Empty();
+
+  void renderInformation(NewCar& item);
+
+  void renderInformation(SecondHandCar& item);
+};
+
+class CarSearchEngine {
+ public:
+  CarSearchEngine(std::vector<NewCar> inventoryNewCar,
+                  std::vector<SecondHandCar> inventorySHCar,
+                  Component* renderer);
+
+  Component* render();
+
+  CarSearchEngine& modelName(std::string s);
+  CarSearchEngine& setMode(int mode);
+
+ protected:
+  std::vector<NewCar> inventoryNewCar;
+  std::vector<SecondHandCar> inventorySHCar;
+
+  std::vector<NewCar> resultNewVector;
+  std::vector<SecondHandCar> resultSHVector;
+
+  std::string modelNameStr;
+
+  Component* renderer;
+
+  int modelNameLen;
+  int mode;
 };
 
 #endif  // !UI_H

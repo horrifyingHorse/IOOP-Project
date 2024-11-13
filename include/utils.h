@@ -1,6 +1,9 @@
 #ifndef UTILS_H
 #define UTILS_H
 
+#include <stdio.h>
+#include <time.h>
+
 #include <algorithm>
 #include <cctype>
 #include <string>
@@ -20,6 +23,8 @@ std::string itos(int n);
 std::string dtos(double n);
 
 std::string to50(std::pair<std::string, std::string>& p);
+
+std::string currentDate();
 
 }  // namespace utils
 

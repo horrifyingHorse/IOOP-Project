@@ -15,7 +15,7 @@ double utils::stod(std::string s) {
     return 0;
   }
 
-  std::cout << value << "\n";
+  // std::cout << value << "\n";
 
   return value;
 }
@@ -77,4 +77,16 @@ std::string utils::to50(std::pair<std::string, std::string>& p) {
   }
 
   return retStr;
+}
+
+std::string utils::currentDate() {
+  time_t now = time(0);
+  struct tm tstruct;
+  char buf[80];
+  tstruct = *localtime(&now);
+
+  // strftime(buf, sizeof(buf), "%Y-%m-%d.%X", &tstruct);
+  strftime(buf, sizeof(buf), "%Y-%m-%d", &tstruct);
+
+  return buf;
 }

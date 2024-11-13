@@ -89,7 +89,8 @@ int mainMenuManager() {
   auto screen = ScreenInteractive::Fullscreen();
 
   std::vector<std::string> entries = {"1. Employ new Employee",
-                                      "2. Unemploy an Employee", "</ Exit"};
+                                      "2. Unemploy an Employee",
+                                      "3. View Sales", "</ Exit"};
   int selected = 0;
 
   MenuOption option;

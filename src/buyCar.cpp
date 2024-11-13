@@ -3,8 +3,10 @@
 #include <ftxui/component/screen_interactive.hpp>
 #include <ftxui/dom/elements.hpp>
 #include <ftxui/dom/node.hpp>
+
 #include "../include/UI.h"
 #include "../include/Humans.h"
+#include "../include/utils.h"
 
 void buyCar(NewCar &c) {
   auto screen = ScreenInteractive::Fullscreen();
@@ -28,15 +30,20 @@ void buyCar(NewCar &c) {
 
   int variant_entry = 0;
   std::vector<std::string> variants = {};
+  std::vector<double> cost = {};
   for (auto v : c.variants) {
     variants.push_back(v.getName());
+    cost.push_back(v.getPrice());
   }
   Component variant_dropdown = Dropdown(&variants, &variant_entry);
 
-
   Component submit_button = Button(" Submit ", [&] {
     Customer cst;
-    cst.updateDetails(name, address, phoneNumber, email, c.modelName, c.colors[color_entry], variants[variant_entry]);
+    cst.updateDetails(
+      name, address, phoneNumber, email,
+      c.modelName, c.colors[color_entry],
+      variants[variant_entry], cost[variant_entry]
+    );
 
     if (!Customer::isValid(cst)) {
       return ;
@@ -62,7 +69,7 @@ void buyCar(NewCar &c) {
         text("Enter Details"), 
         vbox({
           hbox({
-            text(" ") | flex,
+            text(utils::currentDate()) | flex,
             submit_button->Render(),
             quitBut->Render(),
           }),
@@ -99,6 +106,10 @@ void buyCar(NewCar &c) {
           hbox({
             text("Variant   : "),
             variant_dropdown->Render(),
+          }),
+          hbox({
+            text("Cost      : "),
+            text(utils::dtos(cost[variant_entry])),
           })
         })
       ) | center | flex 
@@ -132,7 +143,11 @@ void buyCar(SecondHandCar &c) {
     Customer cst;
 
     cst.setPreOwned(c.prevOwner);
-    cst.updateDetails(name, address, phoneNumber, email, c.modelName, c.colors, c.variant->getName());
+    cst.updateDetails(
+      name, address, phoneNumber, email,
+      c.modelName, c.colors, c.variant->getName(),
+      c.variant->getPrice()
+    );
 
     if (!Customer::isValid(cst)) {
       return ;
@@ -153,10 +168,10 @@ void buyCar(SecondHandCar &c) {
   Component main_renderer = Renderer(main_container, [&] {
     return vbox({
       window(
-        text("Enter Details"), 
+        text("Enter Details"),
         vbox({
           hbox({
-            text(" ") | flex,
+            text(utils::currentDate()) | flex,
             submit_button->Render(),
             quitBut->Render(),
           }),
@@ -193,6 +208,10 @@ void buyCar(SecondHandCar &c) {
           hbox({
             text("Variant   : "),
             text(c.variant->getName())
+          }),
+          hbox({
+            text("Cost      : "),
+            text(utils::dtos(c.variant->getPrice()))
           })
         })
       ) | center | flex 

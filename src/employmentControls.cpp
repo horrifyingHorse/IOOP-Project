@@ -1,13 +1,13 @@
+#include <string>
+#include <utility>
 #include <ftxui/component/component.hpp>
 #include <ftxui/component/component_base.hpp>
 #include <ftxui/component/component_options.hpp>
 #include <ftxui/component/screen_interactive.hpp>
 #include <ftxui/dom/elements.hpp>
-#include <string>
-#include <utility>
+
 #include "../include/UI.h"
 #include "../include/Humans.h"
-#include "ftxui/dom/elements.hpp"
 
 bool managerLogin(Manager& m) {
   auto screen = ScreenInteractive::Fullscreen();
@@ -155,6 +155,5 @@ void removeEmployee(Manager& m) {
   });
 
   screen.Loop(renderer);
-
-  
 }
+

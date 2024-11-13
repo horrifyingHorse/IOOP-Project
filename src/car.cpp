@@ -315,9 +315,12 @@ void CarVariant::display() {
   buildFeatures.display();
 }
 
-
 std::string CarVariant::getName() {
   return this->variantName;
+}
+
+double CarVariant::getPrice() {
+  return this->price;
 }
 
 bool CarVariant::isValid() {
@@ -485,7 +488,7 @@ std::vector<NewCar>* NewCar::loadFromDB() {
   fs::path dirPath = "./db/";
 
   if (fs::exists(dirPath) && fs::is_directory(dirPath)) {
-    std::cout << "Directory exists: " << dirPath << std::endl;
+    // std::cout << "Directory exists: " << dirPath << std::endl;
 
     for (const auto& entry : fs::directory_iterator(dirPath)) {
       if (entry.is_regular_file() && entry.path().extension() == ".txt") {
@@ -495,7 +498,7 @@ std::vector<NewCar>* NewCar::loadFromDB() {
           continue;
         }
 
-        std::cout << "Reading file: " << entry.path() << std::endl;
+        // std::cout << "Reading file: " << entry.path() << std::endl;
         std::string line;
 
         Car tempCar(Car::readFile(file, line), NewCar::readFile(file, line),
@@ -523,7 +526,7 @@ std::vector<NewCar>* NewCar::loadFromDB() {
 
         Car::readFile(file, line);
         while (line != "" && line.find(",") != std::string::npos) {
-          brandNewCar->pushColors(line.substr(0, line.find(",")));
+          brandNewCar->pushColors(utils::trim(line).substr(0, line.find(",")));
           line = line.substr(line.find(",") + 1);
         }
         if (line != "") brandNewCar->pushColors(line);
@@ -624,7 +627,7 @@ bool NewCar::storeIntoDB(NewCar* brandNewCar) {
 
   if (!fs::exists(dirPath)) {
     if (fs::create_directory(dirPath)) {
-      std::cout << "Directory created: " << dirPath << std::endl;
+      // std::cout << "Directory created: " << dirPath << std::endl;
     } else {
       std::cerr << "Failed to create directory: " << dirPath << std::endl;
       return 1;
@@ -712,7 +715,7 @@ std::vector<SecondHandCar>* SecondHandCar::loadFromDB() {
   fs::path dirPath = "./db/preowned";
 
   if (fs::exists(dirPath) && fs::is_directory(dirPath)) {
-    std::cout << "Directory exists: " << dirPath << std::endl;
+    // std::cout << "Directory exists: " << dirPath << std::endl;
 
     for (const auto& entry : fs::directory_iterator(dirPath)) {
       if (entry.is_regular_file() && entry.path().extension() == ".txt") {
@@ -722,7 +725,7 @@ std::vector<SecondHandCar>* SecondHandCar::loadFromDB() {
           continue;
         }
 
-        std::cout << "Reading file: " << entry.path() << std::endl;
+        // std::cout << "Reading file: " << entry.path() << std::endl;
         std::string line;
 
         Car tempCar(Car::readFile(file, line), NewCar::readFile(file, line),
@@ -848,7 +851,7 @@ bool SecondHandCar::storeIntoDB(SecondHandCar* brandNewCar) {
 
   if (!fs::exists(dirPath)) {
     if (fs::create_directory(dirPath)) {
-      std::cout << "Directory created: " << dirPath << std::endl;
+      // std::cout << "Directory created: " << dirPath << std::endl;
     } else {
       std::cerr << "Failed to create directory: " << dirPath << std::endl;
       return 1;
