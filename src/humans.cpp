@@ -15,7 +15,7 @@ string Employee::getName() { return name; }
 
 int Employee::getId() { return id; }
 
-Manager::Manager() : managerName(""), managerPassword(""), isLoggedIn(false) {}
+Manager::Manager() : managerName("bt23cse021"), managerPassword("1703"), isLoggedIn(false) {}
 
 bool Manager::login(string name, string password) {
   isLoggedIn = (name == managerName && password == managerPassword);

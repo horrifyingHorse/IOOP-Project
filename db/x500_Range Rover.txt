@@ -1,0 +1,34 @@
+Luxury Car
+Range Rover
+x500
+2e+07
+0.1
+24
+5
+5
+40
+6000
+Black,
+2.5e+07
+Base Variant
+Petrol
+Manual
+4
+1
+1
+1
+1
+1
+6
+1
+1
+1
+1
+1
+1
+1
+1
+2,3,2,
+250
+titanium,steel
+,

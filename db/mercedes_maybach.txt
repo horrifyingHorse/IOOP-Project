@@ -1,0 +1,34 @@
+Limousine
+maybach
+mercedes
+8e+06
+8.5
+350
+4
+4
+60
+250
+black,gold,
+3e+06
+gls 300
+Petrol
+Automatic
+2
+1
+1
+1
+1
+1
+4
+0
+1
+1
+1
+1
+1
+1
+1
+5.469,2.109,1.51,
+150
+horse skin
+,
