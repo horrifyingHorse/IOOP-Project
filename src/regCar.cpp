@@ -483,43 +483,37 @@ SecondHandCar* regSecondHandCar() {
        input_prev_owner, input_years_used});
 
   // Render the component
+  // clang-format off
   auto basicInfoTab = Renderer(component, [&] {
     return vbox({
-        window(text("Car Info"), vbox({
-                                     hbox(text("Model Name                 : "),
-                                          input_model_name->Render()),
-                                     hbox(text("Model                      : "),
-                                          input_model->Render()),
-                                     hbox(text("Colors                     : "),
-                                          input_colors->Render()),
-                                     hbox(text("Car Type                   : "),
-                                          dropdown_cartype->Render()),
-                                     hbox(text("Base Price                 : "),
-                                          input_base_price->Render()),
-                                     separator(),
-                                     hbox(text("Mileage                    : "),
-                                          input_mileage->Render()),
-                                     hbox(text("Power (bhp)                : "),
-                                          input_power->Render()),
-                                     separator(),
-                                     hbox(text("Fuel Tank Capacity (liters): "),
-                                          input_fuel_tank_capacity->Render()),
-                                     hbox(text("Seating Capacity           : "),
-                                          input_seating_capacity->Render()),
-                                     hbox(text("Number of Doors            : "),
-                                          input_num_of_doors->Render()),
-                                     hbox(text("Engine Capacity (cc)       : "),
-                                          input_engine_capacity->Render()),
-                                 })),
-        hbox({text(" ")}),
-        window(text("Details"), vbox({
-                                    hbox(text("Previous Owner             : "),
-                                         input_prev_owner->Render()),
-                                    hbox(text("Years of Service           : "),
-                                         input_years_used->Render()),
-                                })),
-    });
+      window(
+        text("Car Info"),
+        vbox({
+          hbox( text("Model Name                 : "), input_model_name->Render()),
+          hbox( text("Model                      : "), input_model->Render()),
+          hbox( text("Colors                     : "), input_colors->Render()),
+          hbox( text("Car Type                   : "), dropdown_cartype->Render()),
+          hbox( text("Base Price                 : "), input_base_price->Render()),
+          separator(),
+          hbox( text("Mileage                    : ") , input_mileage->Render()),
+          hbox( text("Power (bhp)                : "), input_power->Render()),
+          separator(),
+          hbox( text("Fuel Tank Capacity (liters): "), input_fuel_tank_capacity->Render()),
+          hbox( text("Seating Capacity           : "), input_seating_capacity->Render()),
+          hbox( text("Number of Doors            : "), input_num_of_doors->Render()),
+          hbox( text("Engine Capacity (cc)       : "), input_engine_capacity->Render()),
+        })
+      ),
+      hbox({text(" ")}),
+      window(
+        text("Details"),
+        vbox({
+          hbox( text("Previous Owner             : "), input_prev_owner->Render()),
+          hbox( text("Years of Service           : "), input_years_used->Render()),
+        })),
+      });
   });
+  // clang-format on
 
   /// Variants Tab
   auto tab_selection =

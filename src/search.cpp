@@ -56,23 +56,22 @@ int searchCars(std::vector<NewCar>& inventoryNewCar,
   std::vector<std::string> usage = {"Brand New Cars", "Pre-Owned Cars"};
   auto usageDropdown = Dropdown(&usage, &indexUsage) | size(WIDTH, EQUAL, 20);
 
-  Component applyButton = Button(
-      " Apply ",
-      [&] {
-        engine.setMode(indexUsage);
-        std::cout << indexUsage;
-      },
-      style);
+  // clang-format off
+  Component applyButton = Button(" Apply ", [&] {
+    engine.setMode(indexUsage);
+    std::cout << indexUsage;
+  }, style);
 
-  Component input_model_name = Input(&modelName, "Model Name or Model",
-                                     InputOption{
-                                         .multiline = false,
-                                         .on_change =
-                                             [&]() {
-                                               engine.modelName(modelName);
-                                               engine.render();
-                                             },
-                                     });
+  Component input_model_name = Input(
+    &modelName,
+    "Model Name or Model",
+    InputOption{
+      .multiline = false,
+      .on_change = [&]() {
+        engine.modelName(modelName);
+        engine.render();
+      },
+  });
 
   auto searchParams = Container::Horizontal({
       input_model_name,
@@ -88,29 +87,26 @@ int searchCars(std::vector<NewCar>& inventoryNewCar,
 
   auto mainRenderer = Renderer(mainContainer, [&] {
     return vbox({
-               hbox({
-                   text("./cars") | dim | bold | hcenter | flex,
-                   quitBut->Render(),
-               }),
-               separatorDouble(),
-
-               vbox({
-                   hbox({
-                       usageDropdown->Render(),
-                       applyButton->Render(),
-                   }),
-                   hbox({
-                       text("Model Name: "),
-                       input_model_name->Render() | size(WIDTH, EQUAL, 20) |
-                           flex,
-                   }),
-               }),
-               separatorLight(),
-
-               searchResults->Render() | vscroll_indicator | frame | flex,
-           }) |
-           border;
+      hbox({
+        text("./cars") | dim | bold | hcenter | flex,
+        quitBut->Render(),
+      }),
+      separatorDouble(),
+        vbox({
+          hbox({
+            usageDropdown->Render(),
+            applyButton->Render(),
+          }),
+          hbox({
+            text("Model Name: "),
+            input_model_name->Render() | size(WIDTH, EQUAL, 20) | flex,
+          }),
+      }),
+      separatorLight(),
+      searchResults->Render() | vscroll_indicator | frame | flex,
+    }) | border;
   });
+  // clang-format on
 
   screen.Loop(mainRenderer);
 

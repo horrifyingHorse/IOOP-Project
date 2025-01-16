@@ -15,7 +15,8 @@ string Employee::getName() { return name; }
 
 int Employee::getId() { return id; }
 
-Manager::Manager() : managerName("bt23cse021"), managerPassword("1703"), isLoggedIn(false) {}
+Manager::Manager()
+    : managerName("bt23cse021"), managerPassword("1703"), isLoggedIn(false) {}
 
 bool Manager::login(string name, string password) {
   isLoggedIn = (name == managerName && password == managerPassword);
@@ -57,7 +58,6 @@ void Manager::removeEmployee(string empID) {
     tempFile.close();
     remove("./db/employees.txt");
     rename("./db/temp.txt", "./db/employees.txt");
-
   } else {
     cout << "Error opening file.\n";
   }
@@ -80,7 +80,6 @@ void Manager::viewSalesStats(Manager& m) {
 
 vector<pair<string, string>> Manager::getAllEmployees() {
   vector<pair<string, string>> employees = {};
-
   ifstream file("./db/employees.txt");
   string empId, empName;
 

@@ -315,13 +315,9 @@ void CarVariant::display() {
   buildFeatures.display();
 }
 
-std::string CarVariant::getName() {
-  return this->variantName;
-}
+std::string CarVariant::getName() { return this->variantName; }
 
-double CarVariant::getPrice() {
-  return this->price;
-}
+double CarVariant::getPrice() { return this->price; }
 
 bool CarVariant::isValid() {
   if (utils::trim(variantName) == "") return false;

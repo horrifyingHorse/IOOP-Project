@@ -5,10 +5,8 @@ void managerProfile(std::vector<NewCar>& inventoryNewCar,
                     std::vector<SecondHandCar>& inventorySHCar) {
   Manager arpit;
   if (!managerLogin(arpit)) return;
-
   while (1) {
     int option = mainMenuManager();
-
     switch (option) {
       case 0: {
         addEmployee(arpit);
@@ -29,9 +27,6 @@ void managerProfile(std::vector<NewCar>& inventoryNewCar,
         return;
         break;
     }
-    // std::cin.clear();
-    // fflush(stdin);
-    // char c = getchar();
   }
 }
 
@@ -39,7 +34,6 @@ void employeeProfile(std::vector<NewCar>& inventoryNewCar,
                      std::vector<SecondHandCar>& inventorySHCar) {
   while (1) {
     int option = mainMenuEmployee();
-
     switch (option) {
       case 0: {
         NewCar* aCar = regCar();
@@ -49,7 +43,6 @@ void employeeProfile(std::vector<NewCar>& inventoryNewCar,
           std::cout << "Stored in db\n";
         else
           std::cout << "Newly Reg Car was not stored in db\n";
-
         inventoryNewCar.push_back(*aCar);
         break;
       }
@@ -72,9 +65,6 @@ void employeeProfile(std::vector<NewCar>& inventoryNewCar,
         return;
         break;
     }
-    // std::cin.clear();
-    // fflush(stdin);
-    // char c = getchar();
   }
 }
 

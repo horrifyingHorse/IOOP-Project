@@ -31,15 +31,15 @@ int mainMenuCustomer() {
     return false;
   });
 
+  // clang-format off
   Component page = Renderer(menu, [&] {
-    return vbox({vbox({
-                     menu->Render(),
-                 }) |
-                 hcenter | center | yflex
-
-           }) |
-           flex;
+    return vbox({
+      vbox({
+        menu->Render(),
+      }) | hcenter | center | yflex
+    }) | flex;
   });
+  // clang-format on
 
   screen.Loop(page);
 
@@ -70,13 +70,15 @@ int mainMenuEmployee() {
     return false;
   });
 
+  // clang-format off
   Component page = Renderer(menu, [&] {
-    return vbox({vbox({
-                     menu->Render(),
-                 }) |
-                 hcenter | center | yflex}) |
-           flex;
+    return vbox({
+      vbox({
+        menu->Render(),
+      }) | hcenter | center | yflex
+    }) | flex;
   });
+  // clang-format on
 
   screen.Loop(page);
 
@@ -108,13 +110,15 @@ int mainMenuManager() {
     return false;
   });
 
+  // clang-format off
   Component page = Renderer(menu, [&] {
-    return vbox({vbox({
-                     menu->Render(),
-                 }) |
-                 hcenter | center | yflex}) |
-           flex;
+    return vbox({
+      vbox({
+        menu->Render(),
+      }) | hcenter | center | yflex
+    }) | flex;
   });
+  // clang-format on
 
   screen.Loop(page);
 

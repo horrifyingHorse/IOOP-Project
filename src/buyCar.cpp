@@ -4,8 +4,8 @@
 #include <ftxui/dom/elements.hpp>
 #include <ftxui/dom/node.hpp>
 
-#include "../include/UI.h"
 #include "../include/Humans.h"
+#include "../include/UI.h"
 #include "../include/utils.h"
 
 void buyCar(NewCar &c) {
@@ -37,6 +37,7 @@ void buyCar(NewCar &c) {
   }
   Component variant_dropdown = Dropdown(&variants, &variant_entry);
 
+  // clang-format off
   Component submit_button = Button(" Submit ", [&] {
     Customer cst;
     cst.updateDetails(
@@ -114,13 +115,11 @@ void buyCar(NewCar &c) {
         })
       ) | center | flex 
     }) | flex;
-
-
   });
+  // clang-format on
 
   screen.Loop(main_renderer);
 }
-
 
 void buyCar(SecondHandCar &c) {
   auto screen = ScreenInteractive::Fullscreen();
@@ -139,6 +138,7 @@ void buyCar(SecondHandCar &c) {
     return event.is_character() && phoneNumber.size() > 10;
   });
 
+  // clang-format off
   Component submit_button = Button(" Submit ", [&] {
     Customer cst;
 
@@ -216,9 +216,8 @@ void buyCar(SecondHandCar &c) {
         })
       ) | center | flex 
     }) | flex;
-
-
   });
+  // clang-format on
 
   screen.Loop(main_renderer);
 }

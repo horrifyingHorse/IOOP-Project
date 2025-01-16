@@ -108,7 +108,6 @@ VariantManager::VariantManager(const char* vn, VariantManager* v)
   input_dimensions[0] |= CatchEvent([&](Event event) {
     if (event.is_character()) {
       char ch = event.character()[0];
-
       if (std::isdigit(ch)) {
         return false;
       } else if (ch == '.') {
@@ -126,7 +125,6 @@ VariantManager::VariantManager(const char* vn, VariantManager* v)
   input_dimensions[1] |= CatchEvent([&](Event event) {
     if (event.is_character()) {
       char ch = event.character()[0];
-
       if (std::isdigit(ch)) {
         return false;
       } else if (ch == '.') {
@@ -144,7 +142,6 @@ VariantManager::VariantManager(const char* vn, VariantManager* v)
   input_dimensions[2] |= CatchEvent([&](Event event) {
     if (event.is_character()) {
       char ch = event.character()[0];
-
       if (std::isdigit(ch)) {
         return false;
       } else if (ch == '.') {
@@ -234,17 +231,23 @@ VariantManager::VariantManager(const char* vn, VariantManager* v)
   });
 
   // Create the main vertical container for the variants
+  // clang-format off
   renderer = Renderer(main_container, [&] {
     return vbox({
-        hbox({basicInfo->Render()}),
-        hbox({text(" ")}),
-        window(text("Features"), vbox({hbox({
-                                           feature_tabs->Render(),
-                                       }) | hcenter,
-                                       tab_content->Render()})) |
-            size(WIDTH, EQUAL, 78) | size(HEIGHT, EQUAL, 15) | hcenter,
+      hbox({basicInfo->Render()}),
+      hbox({text(" ")}),
+      window(
+        text("Features"),
+        vbox({
+          hbox({
+            feature_tabs->Render(),
+          }) | hcenter,
+          tab_content->Render()
+        })
+      ) | size(WIDTH, EQUAL, 78) | size(HEIGHT, EQUAL, 15) | hcenter,
     });
   });
+  // clang-format off
 }
 
 Component VariantManager::getComponent() { return renderer; }
@@ -279,9 +282,7 @@ bool VariantManager::build() {
     delete v;
     return false;
   }
-
   builtVariant = v;
-
   return true;
 }
 
@@ -298,8 +299,11 @@ std::vector<std::string> VariantManager::feature_entries = {
 
 std::vector<std::string> VariantManager::yesno = {"Yes", "No"};
 int VariantManager::variantCount = 1;
-std::vector<std::string> VariantManager::fueltype = {"PETROL", "DIESEL", "CNG",
-                                                     "BIFUEL", "ELECTRIC"};
+// clang-format off
+std::vector<std::string> VariantManager::fueltype = {
+  "PETROL", "DIESEL", "CNG", "BIFUEL", "ELECTRIC"
+};
+// clang-format on
 std::vector<Fuel> VariantManager::fueltypeMap = {
     Fuel::PETROL, Fuel::DIESEL, Fuel::CNG, Fuel::BIFUEL, Fuel::ELECTRIC};
 std::vector<std::string> VariantManager::transmission = {
@@ -367,17 +371,21 @@ RenderVariant::RenderVariant(CarVariant itemV) : itemVariant(itemV) {
     technicalFeatTabs->Add(Renderer([&] { return text("Audio System"); }));
   }
 
+  // clang-format off
   buildFeatTabs = Renderer([&] {
     return vbox({
-        text("Build Material   : " + itemVariant.buildFeatures.bodyMaterial),
-        text("Ground Clearance : " +
-             utils::dtos(itemVariant.buildFeatures.groundClearance)),
-        text("Dimensions       : " +
-             utils::dtos(itemVariant.buildFeatures.dimensions[0]) + " x " +
-             utils::dtos(itemVariant.buildFeatures.dimensions[1]) + " x " +
-             utils::dtos(itemVariant.buildFeatures.dimensions[2])),
+      text("Build Material   : " + itemVariant.buildFeatures.bodyMaterial),
+      text("Ground Clearance : " +
+           utils::dtos(itemVariant.buildFeatures.groundClearance)),
+      text(
+        "Dimensions       : " +
+         utils::dtos(itemVariant.buildFeatures.dimensions[0]) + " x " +
+         utils::dtos(itemVariant.buildFeatures.dimensions[1]) + " x " +
+         utils::dtos(itemVariant.buildFeatures.dimensions[2])
+      ),
     });
   });
+  // clang-format on
 
   tab_content = Container::Tab(
       {safetyFeatTabs, comfortFeatTabs, technicalFeatTabs, buildFeatTabs},
@@ -388,21 +396,30 @@ RenderVariant::RenderVariant(CarVariant itemV) : itemVariant(itemV) {
       tab_content,
   });
 
+  // clang-format off
   this->renderer = Renderer(main_container, [&] {
     return vbox({
-        text("Variant Name           : " + itemVariant.variantName),
-        text("Variant Price          : " + utils::dtos(itemVariant.price)),
-        text("Fuel Type              : " + fuelToString(itemVariant.fuelType)),
-        text("Car Transmission       : " +
-             transmissionToString(itemVariant.carTransmission)),
-        hbox({text(" ")}),
-        window(text("Features"), vbox({hbox({
-                                           feature_tabs->Render(),
-                                       }) | hcenter,
-                                       tab_content->Render()})) |
-            size(WIDTH, EQUAL, 78) | size(HEIGHT, EQUAL, 15) | hcenter,
+      text("Variant Name           : " + itemVariant.variantName),
+      text("Variant Price          : " + utils::dtos(itemVariant.price)),
+      text("Fuel Type              : " + fuelToString(itemVariant.fuelType)),
+      text(
+        "Car Transmission       : " + transmissionToString(
+          itemVariant.carTransmission
+        )
+      ),
+      hbox({text(" ")}),
+      window(
+        text("Features"),
+        vbox({
+          hbox({
+            feature_tabs->Render(),
+          }) | hcenter,
+          tab_content->Render()
+        })
+      ) | size(WIDTH, EQUAL, 78) | size(HEIGHT, EQUAL, 15) | hcenter,
     });
   });
+  // clang-format on
 }
 
 Component RenderVariant::getComponent() { return this->renderer; }
@@ -425,52 +442,45 @@ SearchResultRender::SearchResultRender(NewCar car)
       " Know More ", [&] { SearchResultRender::renderInformation(itemNew); },
       ButtonOption::Ascii());
 
-  // skibidi
   buyButton = Button(" Buy ", [&] { buyCar(itemNew); }, ButtonOption::Ascii());
 
   interactiveContainer = Container::Vertical(
       {colorDropDown, Container::Horizontal({moreInfo, buyButton})});
 
+  // clang-format off
   this->basicInfo = Renderer(interactiveContainer, [&] {
     return vbox({
-               text("Model                 : " + itemNew.model),
-               hbox(
-                   {text("Colors                : "), colorDropDown->Render()}),
-               text("Car Type              : " +
-                    carTypeToString(itemNew.carType)),
-               text("Base Price            : " +
-                    utils::dtos((itemNew.basePrice))),
-               separator(),
-               text("Mileage               : " +
-                    utils::dtos((itemNew.mileage))),
-               text("Power                 : " + utils::dtos((itemNew.power))),
-               separator(),
-               text("Fuel Tank Capacity    : " +
-                    utils::dtos((itemNew.fuelTankCapacity))),
-               text("Seating Capacity      : " +
-                    utils::dtos((itemNew.seatingCapacity))),
-               text("Number of Doors       : " +
-                    utils::dtos((itemNew.numOfDoors))),
-               text("Engine Capacity (cc)  : " +
-                    utils::dtos((itemNew.engineCapacity))),
-               hbox({
-                   moreInfo->Render(),
-                   buyButton->Render(),
-
-               }) | hcenter,
-           }) |
-           border | xflex_grow | hcenter;
+      text("Model                 : " + itemNew.model),
+      hbox({
+        text("Colors                : "),
+        colorDropDown->Render()
+      }),
+      text("Car Type              : " + carTypeToString(itemNew.carType)),
+      text("Base Price            : " + utils::dtos((itemNew.basePrice))),
+      separator(),
+      text("Mileage               : " + utils::dtos((itemNew.mileage))),
+      text("Power                 : " + utils::dtos((itemNew.power))),
+      separator(),
+      text("Fuel Tank Capacity    : " + utils::dtos((itemNew.fuelTankCapacity))),
+      text("Seating Capacity      : " + utils::dtos((itemNew.seatingCapacity))),
+      text("Number of Doors       : " + utils::dtos((itemNew.numOfDoors))),
+      text("Engine Capacity (cc)  : " + utils::dtos((itemNew.engineCapacity))),
+      hbox({
+          moreInfo->Render(),
+          buyButton->Render(),
+      }) | hcenter,
+    }) | border | xflex_grow | hcenter;
   });
 
-  collapsible = Collapsible(" " + itemNew.modelName + " ",
-                            Inner({
-                                this->basicInfo,
-                            }));  // | size(WIDTH, LESS_THAN, 20);
+  collapsible = Collapsible(
+    " " + itemNew.modelName + " ",
+    Inner({ this->basicInfo, })
+  );
 
   this->renderer = Renderer(Container::Vertical({collapsible}), [&] {
     return vbox({collapsible->Render()});
-    // return hbox({collapsible->Render(), text(" " + itemNew.model) | dim});
   });
+  // clang-format on
 }
 
 SearchResultRender::SearchResultRender(SecondHandCar car)
@@ -481,49 +491,45 @@ SearchResultRender::SearchResultRender(SecondHandCar car)
       " Know More ", [&] { SearchResultRender::renderInformation(itemOld); },
       ButtonOption::Ascii());
 
-  // skibidi
   buyButton = Button(" Buy ", [&] { buyCar(itemOld); }, ButtonOption::Ascii());
 
   interactiveContainer =
       Container::Vertical({Container::Horizontal({moreInfo, buyButton})});
 
+  // clang-format off
   this->basicInfo = Renderer(interactiveContainer, [&] {
     return vbox({
-               text("Model                 : " + itemOld.model),
-               hbox({text("Color                 : " + itemOld.colors)}),
-               text("Car Type              : " +
-                    carTypeToString(itemOld.carType)),
-               text("Base Price            : " +
-                    utils::dtos((itemOld.basePrice))),
-               separator(),
-               text("Mileage               : " +
-                    utils::dtos((itemOld.mileage))),
-               text("Power                 : " + utils::dtos((itemOld.power))),
-               separator(),
-               text("Fuel Tank Capacity    : " +
-                    utils::dtos((itemOld.fuelTankCapacity))),
-               text("Seating Capacity      : " +
-                    utils::dtos((itemOld.seatingCapacity))),
-               text("Number of Doors       : " +
-                    utils::dtos((itemOld.numOfDoors))),
-               text("Engine Capacity (cc)  : " +
-                    utils::dtos((itemOld.engineCapacity))),
-               hbox({
-                   moreInfo->Render(),
-                   buyButton->Render(),
-
-               }) | hcenter,
-           }) |
-           border | xflex_grow | hcenter;
+      text("Model                 : " + itemOld.model),
+      hbox({
+        text("Color                 : " + itemOld.colors)
+      }),
+      text("Car Type              : " + carTypeToString(itemOld.carType)),
+      text("Base Price            : " + utils::dtos((itemOld.basePrice))),
+      separator(),
+      text("Mileage               : " + utils::dtos((itemOld.mileage))),
+      text("Power                 : " + utils::dtos((itemOld.power))),
+      separator(),
+      text("Fuel Tank Capacity    : " + utils::dtos((itemOld.fuelTankCapacity))),
+      text("Seating Capacity      : " + utils::dtos((itemOld.seatingCapacity))),
+      text("Number of Doors       : " + utils::dtos((itemOld.numOfDoors))),
+      text("Engine Capacity (cc)  : " + utils::dtos((itemOld.engineCapacity))),
+      hbox({
+        moreInfo->Render(),
+        buyButton->Render()
+      }) | hcenter,
+    }) | border | xflex_grow | hcenter;
   });
 
-  collapsible = Collapsible(" " + itemOld.modelName + " ",
-                            Inner({
-                                this->basicInfo,
-                            }));  // | size(WIDTH, LESS_THAN, 20);
+  collapsible = Collapsible(
+    " " + itemOld.modelName + " ",
+    Inner({ this->basicInfo,
+    })
+  );
 
-  this->renderer = Renderer(Container::Vertical({collapsible}),
-                            [&] { return vbox({collapsible->Render()}); });
+  this->renderer = Renderer(Container::Vertical({collapsible}), [&] {
+    return vbox({collapsible->Render()});
+  });
+  // clang-format on
 }
 
 Component& SearchResultRender::getComponent() { return renderer; }
@@ -551,37 +557,35 @@ void SearchResultRender::renderInformation(NewCar& item) {
   auto colorDropDown =
       Dropdown(&item.colors, &colorIndex) | size(WIDTH, EQUAL, 20);
 
+  // clang-format off
   auto basicInfoTab = Renderer(colorDropDown, [&] {
-    return vbox({window(
+    return vbox({
+      window(
         text("New Car Info"),
         vbox({
-            hbox(text("Model Name                 : " + item.model)),
-            hbox(text("Model                      : " + item.modelName)),
-            hbox(text("Colors                     : "),
-                 colorDropDown->Render()),
-            hbox(text("Car Type                   : " +
-                      carTypeToString(item.carType))),
-            hbox(text("Base Price                 : " +
-                      utils::dtos(item.basePrice))),
-            separator(),
-            hbox(text("Mileage                    : " +
-                      utils::dtos(item.mileage))),
-            hbox(text("Power (bhp)                : " +
-                      utils::dtos(item.power))),
-            separator(),
-            hbox(text("Fuel Tank Capacity (liters): " +
-                      utils::dtos(item.fuelTankCapacity))),
-            hbox(text("Seating Capacity           : " +
-                      utils::dtos(item.seatingCapacity))),
-            hbox(text("Number of Doors            : " +
-                      utils::dtos(item.numOfDoors))),
-            hbox(text("Engine Capacity (cc)       : " +
-                      utils::dtos(item.engineCapacity))),
-        }))});
+          hbox(text("Model Name                 : " + item.model)),
+          hbox(text("Model                      : " + item.modelName)),
+          hbox(
+            text("Colors                     : "),
+            colorDropDown->Render()
+          ),
+          hbox(text("Car Type                   : " + carTypeToString(item.carType))),
+          hbox(text("Base Price                 : " + utils::dtos(item.basePrice))),
+          separator(),
+          hbox(text("Mileage                    : " + utils::dtos(item.mileage))),
+          hbox(text("Power (bhp)                : " + utils::dtos(item.power))),
+          separator(),
+          hbox(text("Fuel Tank Capacity (liters): " + utils::dtos(item.fuelTankCapacity))),
+          hbox(text("Seating Capacity           : " + utils::dtos(item.seatingCapacity))),
+          hbox(text("Number of Doors            : " + utils::dtos(item.numOfDoors))),
+          hbox(text("Engine Capacity (cc)       : " + utils::dtos(item.engineCapacity))),
+        })
+      )
+    });
   });
+  // clang-format on
 
   auto quitBut = Button(" x ", [&] { screen.Exit(); }, style);
-
   auto buyButton = Button(" Buy ", [&] { buyCar(item); }, style);
 
   int tab_index = 0;
@@ -591,7 +595,6 @@ void SearchResultRender::renderInformation(NewCar& item) {
 
   for (auto var : item.variants) {
     tab_entries.push_back(" " + var.variantName + " ");
-
     RenderVariant* newVariant = new RenderVariant(var);
     vars.push_back(*newVariant);
     tabs.push_back(newVariant->getComponent());
@@ -599,7 +602,6 @@ void SearchResultRender::renderInformation(NewCar& item) {
 
   auto tab_selection =
       Menu(&tab_entries, &tab_index, MenuOption::HorizontalAnimated());
-
   auto tab_content = Container::Tab(tabs, &tab_index);
 
   auto main_container = Container::Vertical({
@@ -624,52 +626,53 @@ void SearchResultRender::renderInformation(SecondHandCar& item) {
   auto style = ButtonOption::Animated(Color::Default, Color::GrayDark,
                                       Color::Default, Color::White);
 
+  // clang-format off
   auto basicInfoTab = Renderer([&] {
     return vbox({
-        window(text("New Car Info"),
-               vbox({
-                   hbox(text("Model Name                 : " + item.model)),
-                   hbox(text("Model                      : " + item.modelName)),
-                   hbox(text("Colors                     : " + item.colors)),
-                   hbox(text("Car Type                   : " +
-                             carTypeToString(item.carType))),
-                   hbox(text("Base Price                 : " +
-                             utils::dtos(item.basePrice))),
-                   separator(),
-                   hbox(text("Mileage                    : " +
-                             utils::dtos(item.mileage))),
-                   hbox(text("Power (bhp)                : " +
-                             utils::dtos(item.power))),
-                   separator(),
-                   hbox(text("Fuel Tank Capacity (liters): " +
-                             utils::dtos(item.fuelTankCapacity))),
-                   hbox(text("Seating Capacity           : " +
-                             utils::dtos(item.seatingCapacity))),
-                   hbox(text("Number of Doors            : " +
-                             utils::dtos(item.numOfDoors))),
-                   hbox(text("Engine Capacity (cc)       : " +
-                             utils::dtos(item.engineCapacity))),
-
-               })),
-
-        hbox({text(" ")}),
-        window(text("Details"),
-               vbox({
-                   hbox(text("Previous Owner             : " + item.prevOwner)),
-                   hbox(text("Years of Service           : " +
-                             utils::itos(item.yearsUsed) + " yr")),
-               })),
-
+      window(
+        text("New Car Info"),
+        vbox({
+          hbox(text("Model Name                 : " + item.model)),
+          hbox(text("Model                      : " + item.modelName)),
+          hbox(text("Colors                     : " + item.colors)),
+          hbox(text("Car Type                   : " +
+                    carTypeToString(item.carType))),
+          hbox(text("Base Price                 : " +
+                    utils::dtos(item.basePrice))),
+          separator(),
+          hbox(text("Mileage                    : " +
+                    utils::dtos(item.mileage))),
+          hbox(text("Power (bhp)                : " +
+                    utils::dtos(item.power))),
+          separator(),
+          hbox(text("Fuel Tank Capacity (liters): " +
+                    utils::dtos(item.fuelTankCapacity))),
+          hbox(text("Seating Capacity           : " +
+                    utils::dtos(item.seatingCapacity))),
+          hbox(text("Number of Doors            : " +
+                    utils::dtos(item.numOfDoors))),
+          hbox(text("Engine Capacity (cc)       : " +
+                    utils::dtos(item.engineCapacity)))
+         })
+      ),
+      hbox({text(" ")}),
+      window(
+        text("Details"),
+        vbox({
+          hbox(text("Previous Owner             : " + item.prevOwner)),
+          hbox(text("Years of Service           : " +
+                    utils::itos(item.yearsUsed) + " yr")),
+        })
+      ),
     });
   });
+  // clang-format on
 
   auto quitBut = Button(" x ", [&] { screen.Exit(); }, style);
-
   int tab_index = 0;
   std::vector<std::string> tab_entries = {" Basic Details "};
   std::vector<Component> tabs = {basicInfoTab};
   std::vector<RenderVariant> vars = {};
-
   tab_entries.push_back(" " + item.variant->variantName + " ");
 
   RenderVariant* newVariant = new RenderVariant(*item.variant);
@@ -678,7 +681,6 @@ void SearchResultRender::renderInformation(SecondHandCar& item) {
 
   auto tab_selection =
       Menu(&tab_entries, &tab_index, MenuOption::HorizontalAnimated());
-
   auto tab_content = Container::Tab(tabs, &tab_index);
 
   auto main_container = Container::Vertical({
@@ -817,8 +819,6 @@ void managerSalesView(Manager& m) {
 
   fs::path dirPath = "./db/reciept/";
   if (fs::exists(dirPath) && fs::is_directory(dirPath)) {
-    // std::cout << "Directory exists: " << dirPath << std::endl;
-
     for (const auto& entry : fs::directory_iterator(dirPath)) {
       if (entry.is_regular_file() && entry.path().extension() == ".txt") {
         std::ifstream file(entry.path());
@@ -827,40 +827,28 @@ void managerSalesView(Manager& m) {
           continue;
         }
 
-        //  std::cout << "Reading file: " << entry.path() << std::endl;
         std::string line;
-
         Customer* c = new Customer();
         getline(file, line);
         c->billNum = utils::stoi(line);
-
         getline(file, line);
         c->date = line;
-
         getline(file, line);
         c->name = line;
-
         getline(file, line);
         c->address = line;
-
         getline(file, line);
         c->phoneNumber = line;
-
         getline(file, line);
         c->email = line;
-
         getline(file, line);
         c->carModel = line;
-
         getline(file, line);
         c->color = line;
-
         getline(file, line);
         c->carVariant = line;
-
         getline(file, line);
         c->price = utils::stod(line);
-
         if (!Customer::isValid(*c)) {
           delete c;
           continue;
@@ -875,8 +863,6 @@ void managerSalesView(Manager& m) {
 
   dirPath = "./db/reciept/preowned/";
   if (fs::exists(dirPath) && fs::is_directory(dirPath)) {
-    // std::cout << "Directory exists: " << dirPath << std::endl;
-
     for (const auto& entry : fs::directory_iterator(dirPath)) {
       if (entry.is_regular_file() && entry.path().extension() == ".txt") {
         std::ifstream file(entry.path());
@@ -885,43 +871,30 @@ void managerSalesView(Manager& m) {
           continue;
         }
 
-        // std::cout << "Reading file: " << entry.path() << std::endl;
         std::string line;
-
         Customer* c = new Customer();
         getline(file, line);
         c->setPreOwned(line);
-
         getline(file, line);
         c->billNum = utils::stoi(line);
-
         getline(file, line);
         c->date = line;
-
         getline(file, line);
         c->name = line;
-
         getline(file, line);
         c->address = line;
-
         getline(file, line);
         c->phoneNumber = line;
-
         getline(file, line);
         c->email = line;
-
         getline(file, line);
         c->carModel = line;
-
         getline(file, line);
         c->color = line;
-
         getline(file, line);
         c->carVariant = line;
-
         getline(file, line);
         c->price = utils::stod(line);
-
         if (!Customer::isValid(*c)) {
           delete c;
           continue;
@@ -972,78 +945,82 @@ void managerSalesView(Manager& m) {
   Component main_container =
       Container::Vertical({quitBut, tab_selection, tab_content});
 
+  // clang-format off
   Component main_renderer = Renderer(main_container, [&] {
     const int width = 50;
-
-    return vbox({vbox({
-                     hbox({text(" Sales Stats: ") | flex, quitBut->Render()}) |
-                         size(WIDTH, EQUAL, width),
-                     vbox({tab_selection->Render(),
-                           tab_content->Render() | vscroll_indicator}) |
-                         vscroll_indicator | border |
-                         size(WIDTH, EQUAL, width) | size(HEIGHT, EQUAL, 20),
-                     vbox({text("Total Revenue: " +
-                                utils::dtos(revenue[tab_index])),
-                           text("Total Cars Sold: " +
-                                utils::itos(count[tab_index])),
-                           separatorEmpty(), text("Grand Total:"),
-                           text(utils::itos(count[0] + count[1]) +
-                                " Cars sold worth Rs. " +
-                                utils::dtos(revenue[0] + revenue[1]))}) |
-                         size(WIDTH, EQUAL, width),
-                 }) |
-                 flex | center}) |
-           yflex | center;
+    return vbox({
+      vbox({
+        hbox({
+          text(" Sales Stats: ") | flex,
+          quitBut->Render()
+        }) | size(WIDTH, EQUAL, width),
+        vbox({
+          tab_selection->Render(),
+          tab_content->Render() | vscroll_indicator
+        }) | vscroll_indicator | border
+           | size(WIDTH, EQUAL, width) | size(HEIGHT, EQUAL, 20),
+        vbox({
+          text("Total Revenue: " + utils::dtos(revenue[tab_index])),
+          text("Total Cars Sold: " + utils::itos(count[tab_index])),
+          separatorEmpty(),
+          text("Grand Total:"),
+          text(utils::itos(count[0] + count[1]) + " Cars sold worth Rs. " + utils::dtos(revenue[0] + revenue[1]))
+        }) | size(WIDTH, EQUAL, width),
+      }) | flex | center
+    }) | yflex | center;
   });
+  // clang-format on
 
   screen.Loop(main_renderer);
 }
 
 void managerSalesViewExpand(Customer& c) {
   auto screen = ScreenInteractive::Fullscreen();
-
   auto quitBut = Button(" x ", [&] { screen.Exit(); }, ButtonOption::Ascii());
-
   Component main_container = Container::Vertical({quitBut});
 
+  // clang-format off
   Component main_renderer = Renderer(main_container, [&] {
-    return vbox({window(text("Sale Information"),
-                        vbox({
-                            hbox({
-                                text(c.date) | flex,
-                                quitBut->Render(),
-                            }),
-                            text("Bill no. " + utils::itos(c.billNum)),
-                            separatorLight(),
-                            hbox({
-                                text("Name      : " + c.name),
-                            }),
-                            hbox({
-                                text("Address   : " + c.address),
-                            }),
-                            hbox({
-                                text("Email     : " + c.email),
-                            }),
-                            hbox({
-                                text("Phone No. : " + c.phoneNumber),
-                            }) | size(WIDTH, EQUAL, 40),
-                            separatorEmpty(),
-                            hbox({
-                                text("Car Model : " + c.carModel),
-                            }),
-                            hbox({
-                                text("Color     : " + utils::trim(c.color)),
-                            }),
-                            hbox({
-                                text("Variant   : " + c.carVariant),
-                            }),
-                            hbox({
-                                text("Cost      : " + utils::dtos(c.price)),
-                            }),
-                        })) |
-                 center | flex}) |
-           flex;
+    return vbox({
+      window(
+        text("Sale Information"),
+        vbox({
+          hbox({
+            text(c.date) | flex,
+            quitBut->Render(),
+          }),
+          text("Bill no. " + utils::itos(c.billNum)),
+          separatorLight(),
+          hbox({
+            text("Name      : " + c.name),
+          }),
+          hbox({
+            text("Address   : " + c.address),
+          }),
+          hbox({
+            text("Email     : " + c.email),
+          }),
+          hbox({
+            text("Phone No. : " + c.phoneNumber),
+          }) | size(WIDTH, EQUAL, 40),
+          separatorEmpty(),
+          hbox({
+            text("Car Model : " + c.carModel),
+          }),
+          hbox({
+            text("Color     : " + utils::trim(c.color)),
+          }),
+          hbox({
+            text("Variant   : " + c.carVariant),
+          }),
+          hbox({
+            text("Cost      : " + utils::dtos(c.price)),
+          }),
+        })
+      ) | center | flex
+    }) | flex;
   });
+  // clang-format on
 
   screen.Loop(main_renderer);
 }

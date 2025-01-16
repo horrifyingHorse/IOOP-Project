@@ -1,13 +1,13 @@
-#include <string>
-#include <utility>
 #include <ftxui/component/component.hpp>
 #include <ftxui/component/component_base.hpp>
 #include <ftxui/component/component_options.hpp>
 #include <ftxui/component/screen_interactive.hpp>
 #include <ftxui/dom/elements.hpp>
+#include <string>
+#include <utility>
 
-#include "../include/UI.h"
 #include "../include/Humans.h"
+#include "../include/UI.h"
 
 bool managerLogin(Manager& m) {
   auto screen = ScreenInteractive::Fullscreen();
@@ -19,9 +19,12 @@ bool managerLogin(Manager& m) {
 
   auto quitBut = Button(" x ", [&] { screen.Exit(); }, ButtonOption::Ascii());
 
-  Component input_username = Input(&username, " Username ") | size(WIDTH, EQUAL, 10);
-  Component input_password = Input(&password, " Password ") | size(WIDTH, EQUAL, 10);
+  Component input_username =
+      Input(&username, " Username ") | size(WIDTH, EQUAL, 10);
+  Component input_password =
+      Input(&password, " Password ") | size(WIDTH, EQUAL, 10);
 
+  // clang-format off
   Component submit_button = Button(" Submit ", [&] {
     isValid = m.login(username, password);
     if (isValid) {
@@ -53,9 +56,9 @@ bool managerLogin(Manager& m) {
       }) |  center | border | size(WIDTH, EQUAL, 40),
     }) | yflex | center | hcenter;
   });
+  // clang-format on
 
   screen.Loop(mainRenderer);
-
   return isValid;
 }
 
@@ -65,6 +68,7 @@ void addEmployee(Manager& m) {
   std::string empName = "";
   std::string empID = "";
 
+  // clang-format off
   auto quitBut = Button(" x ", [&] { screen.Exit(); }, ButtonOption::Ascii());
   Component submit_button = Button(" Submit ", [&] {
     if(m.addEmployee(empName, empID)) {
@@ -105,16 +109,18 @@ void addEmployee(Manager& m) {
     }) | center | hcenter | yflex
     }) | flex;
   });
+  // clang-format on
 
   screen.Loop(main_renderer);
 }
 
 void removeEmployee(Manager& m) {
   auto screen = ScreenInteractive::Fullscreen();
-  std::vector<std::pair<std::string, std::string>> empList = m.getAllEmployees();
+  std::vector<std::pair<std::string, std::string>> empList =
+      m.getAllEmployees();
   bool states[empList.size()];
 
-
+  // clang-format off
   auto quitBut = Button(" x ", [&] { screen.Exit(); }, ButtonOption::Ascii());
   Component submit_button = Button(" Submit ", [&] {
     int removeCount = 0;
@@ -126,15 +132,15 @@ void removeEmployee(Manager& m) {
     }
     screen.Exit();
   }, ButtonOption::Ascii());
+  // clang-format on
 
   auto container = Container::Vertical({});
   for (int i = 0; i < empList.size(); ++i) {
     states[i] = false;
-    container->Add(
-        Checkbox(utils::to50(empList[i]),
-                 &states[i]));
+    container->Add(Checkbox(utils::to50(empList[i]), &states[i]));
   }
 
+  // clang-format off
   Component main_container = Container::Vertical({
     Container::Horizontal({submit_button, quitBut}),
     container
@@ -153,7 +159,7 @@ void removeEmployee(Manager& m) {
       }) | flex | size(WIDTH, EQUAL, 50) 
     }) | flex | center;
   });
+  // clang-format on
 
   screen.Loop(renderer);
 }
-
