@@ -1,5 +1,13 @@
 #!/bin/bash
 buildOnly=false
+osid=$(cat /etc/os-release | awk -F = '{if(NR == 3){print $2}}')
+pkgmng="apt install"
+
+echo "$osid detected;"
+if [[ $osid == "arch" ]]; then
+  pkgmng="pacman -S"
+fi
+echo $pkgmng
 
 if [ $# -ge 1 ]; then
   if [ "$1" = "-b" ]; then
@@ -17,26 +25,28 @@ else
   mkdir ./build
 fi
 
-if dpkg -s cmake >/dev/null 2>&1; then
+if which cmake >/dev/null 2>&1; then
   echo 'found cmake to build;'
 else
-  echo "to build this project you need to install cmake"
-  sudo apt install cmake
-  # sudo apt-get install cmake
-  echo "--------------------------"
+  echo "to build this project you need to install cmake;"
+  sudo $pkgmng cmake
+  if [ $? -eq 1 ]; then
+    echo "quit building; cmake couldn't be installed;"
+    exit 1
+  fi
   echo "cmake installed to build;"
 fi
 
 cd ./build/
 cmake ..
 if [ $? -eq 1 ]; then
-  echo "quit building due to error;"
+  echo "quit building due to cmake error;"
   exit 1
 fi
 
-make
+make -j8
 if [ $? -eq 1 ]; then
-  echo "quit building due to error;"
+  echo "quit building due to make error;"
   exit 1
 fi
 
