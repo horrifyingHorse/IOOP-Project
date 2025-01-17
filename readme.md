@@ -29,8 +29,8 @@ TUI in this project is made with the amazing TUI library with an extremely simpl
 
 <hr>
 
-`Team Members:`
-@horrifyingHorse 
-@YuvaVarshith49 
-@Arpitbanait 
-@Nishitha-1516 
+`Team:`<br>
+- [@horrifyingHorse](https://github.com/horrifyingHorse)
+- [@YuvaVarshith49](https://github.com/YuvaVarshith49)
+- [@Arpitbanait](https://github.com/Arpitbanait)
+- [@Nishitha-1516](https://github.com/Nishitha-1516)
