@@ -8,7 +8,7 @@
 ## Build this.Project
 Clone this repository, in your terminal paste:
 ```bash
-git clone https://github.com/horrifyingHorse/test
+git clone -b windows --depth 1 https://github.com/horrifyingHorse/IOOP-Project.git
 ```
 **For Windows:**
 
