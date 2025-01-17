@@ -1,6 +1,3 @@
-#include <cmath>
-#include <cstdio>
-#include <cstdlib>
 #include <vector>
 
 #include "../include/Car.h"

@@ -20,21 +20,7 @@ int searchCars(std::vector<NewCar>& inventoryNewCar,
 
   auto searchResults = Container::Vertical({});
 
-  std::vector<std::vector<Car*>> c;
-  std::vector<Car*> newC;
-  std::vector<Car*> oldC;
-
-  for (auto car : inventoryNewCar) {
-    newC.push_back(&car);
-  }
-  for (auto car : inventorySHCar) {
-    oldC.push_back(&car);
-  }
-  c.push_back(newC);
-  c.push_back(oldC);
-
   CarSearchEngine engine(inventoryNewCar, inventorySHCar, &searchResults);
-  // CarSearchEngine engine(c, &searchResults);
 
   /* Implement Search for:
    * [√] Model Name

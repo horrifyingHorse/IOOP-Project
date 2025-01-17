@@ -1,6 +1,7 @@
 #include "../include/Car.h"
 
 #include <iomanip>
+#include <memory>
 
 std::string fuelToString(Fuel fuel) {
   switch (fuel) {
@@ -673,7 +674,7 @@ SecondHandCar& SecondHandCar::pushColors(std::string& color) {
 }
 
 SecondHandCar& SecondHandCar::pushVariant(CarVariant& variant) {
-  this->variant = &variant;
+  this->variant = std::make_shared<CarVariant>(variant);
   return *this;
 }
 

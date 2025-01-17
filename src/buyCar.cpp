@@ -22,7 +22,7 @@ void buyCar(NewCar &c) {
     return event.is_character() && !std::isdigit(event.character()[0]);
   });
   input_phoneNumber |= CatchEvent([&](Event event) {
-    return event.is_character() && phoneNumber.size() > 10;
+    return event.is_character() && phoneNumber.size() >= 10;
   });
 
   int color_entry = 0;
@@ -135,7 +135,7 @@ void buyCar(SecondHandCar &c) {
     return event.is_character() && !std::isdigit(event.character()[0]);
   });
   input_phoneNumber |= CatchEvent([&](Event event) {
-    return event.is_character() && phoneNumber.size() > 10;
+    return event.is_character() && phoneNumber.size() >= 10;
   });
 
   // clang-format off

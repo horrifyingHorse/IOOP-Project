@@ -1,6 +1,8 @@
 #ifndef UI_H
 #define UI_H
 
+#include <memory>
+
 #include "Car.h"
 #include "Humans.h"
 #include "ftxui/component/component.hpp"
@@ -49,7 +51,7 @@ class VariantManager {
   CarVariant& getVariant();
 
  private:
-  CarVariant* builtVariant;
+  std::shared_ptr<CarVariant> builtVariant;
 
   bool airBagShow;
   bool hasABS;
@@ -182,6 +184,7 @@ class CarSearchEngine {
   CarSearchEngine(std::vector<NewCar> inventoryNewCar,
                   std::vector<SecondHandCar> inventorySHCar,
                   Component* renderer);
+  ~CarSearchEngine();
 
   Component* render();
 
@@ -197,10 +200,14 @@ class CarSearchEngine {
 
   std::string modelNameStr;
 
+  std::vector<SearchResultRender*> searchResults;
   Component* renderer;
 
   int modelNameLen;
   int mode;
+
+ private:
+  void clearSearchResults();
 };
 
 #endif  // !UI_H

@@ -6,6 +6,7 @@
 #include <fstream>
 #include <iostream>
 #include <iterator>
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -235,7 +236,7 @@ class SecondHandCar : public Car {
  protected:
   std::string colors;
   std::string prevOwner;
-  CarVariant* variant;
+  std::shared_ptr<CarVariant> variant;
 
   int yearsUsed;
 

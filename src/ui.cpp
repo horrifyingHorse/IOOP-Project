@@ -1,10 +1,14 @@
 #include "../include/UI.h"
 
 #include <csignal>
+#include <cstdio>
+#include <cstdlib>
 #include <ftxui/component/component.hpp>
 #include <ftxui/component/component_base.hpp>
 #include <ftxui/component/screen_interactive.hpp>
 #include <ftxui/dom/elements.hpp>
+#include <memory>
+#include <string>
 
 VariantManager::VariantManager(const char* vn, VariantManager* v)
     : builtVariant(nullptr) {
@@ -247,7 +251,7 @@ VariantManager::VariantManager(const char* vn, VariantManager* v)
       ) | size(WIDTH, EQUAL, 78) | size(HEIGHT, EQUAL, 15) | hcenter,
     });
   });
-  // clang-format off
+  // clang-format on
 }
 
 Component VariantManager::getComponent() { return renderer; }
@@ -269,8 +273,8 @@ bool VariantManager::build() {
   BuildFeatures bf(bodyMaterial, utils::stod(groundClearanceNum), dim);
   if (!bf.isValid()) return false;
 
-  CarVariant* v = new CarVariant(variantName, utils::stod(price));
-  v->setFuelType(fueltypeMap[fuelSelect])
+  CarVariant* builtVariant = new CarVariant(variantName, utils::stod(price));
+  builtVariant->setFuelType(fueltypeMap[fuelSelect])
       .setCarTransmission(transmissionMap[transmissionSelect])
       .pushAdditionalFeatures(additionalFeat)
       .setSafetyFeatures(sf)
@@ -278,11 +282,13 @@ bool VariantManager::build() {
       .setTechnoFeatures(tf)
       .setBuildFeatures(bf);
 
-  if (!v->isValid()) {
-    delete v;
+  if (!builtVariant->isValid()) {
+    delete builtVariant;
+    builtVariant = nullptr;
     return false;
   }
-  builtVariant = v;
+  this->builtVariant = std::make_shared<CarVariant>(*builtVariant);
+  // delete builtVariant;
   return true;
 }
 
@@ -709,15 +715,27 @@ CarSearchEngine::CarSearchEngine(std::vector<NewCar> inventoryNewCar,
       resultNewVector({}),
       resultSHVector({}),
       modelNameStr(""),
-      modelNameLen(0) {}
+      modelNameLen(0),
+      searchResults({}) {}
+
+CarSearchEngine::~CarSearchEngine() { this->clearSearchResults(); }
+
+void CarSearchEngine::clearSearchResults() {
+  for (auto result : this->searchResults) {
+    if (result != nullptr) delete result;
+  }
+  this->searchResults.clear();
+}
 
 Component* CarSearchEngine::render() {
   (*renderer)->DetachAllChildren();
+  this->clearSearchResults();
 
   switch (this->mode) {
     case 0: {
       for (auto car : resultNewVector) {
         SearchResultRender* r = new SearchResultRender(car);
+        this->searchResults.push_back(r);
         (*renderer)->Add(r->getComponent());
       }
       break;
@@ -726,6 +744,7 @@ Component* CarSearchEngine::render() {
     case 1: {
       for (auto car : resultSHVector) {
         SearchResultRender* r = new SearchResultRender(car);
+        this->searchResults.push_back(r);
         (*renderer)->Add(r->getComponent());
       }
       break;
@@ -753,7 +772,7 @@ CarSearchEngine& CarSearchEngine::modelName(std::string s) {
             ++it;
         }
       } else {
-        for (auto car : inventoryNewCar) {
+        for (auto& car : inventoryNewCar) {
           std::string cmpStr = car.modelName;
           std::string cmpStr2 = car.model;
           if (utils::toLowerCase(cmpStr).find(s) != std::string::npos ||
@@ -765,7 +784,7 @@ CarSearchEngine& CarSearchEngine::modelName(std::string s) {
       break;
     }
 
-    case 1:
+    case 1: {
       if (s.length() <= this->modelNameLen) resultSHVector.clear();
       if (!resultSHVector.empty()) {
         for (auto it = resultSHVector.begin(); it != resultSHVector.end();) {
@@ -778,7 +797,7 @@ CarSearchEngine& CarSearchEngine::modelName(std::string s) {
             ++it;
         }
       } else {
-        for (auto car : inventorySHCar) {
+        for (auto& car : inventorySHCar) {
           std::string cmpStr = car.modelName;
           std::string cmpStr2 = car.model;
           if (utils::toLowerCase(cmpStr).find(s) != std::string::npos ||
@@ -788,6 +807,7 @@ CarSearchEngine& CarSearchEngine::modelName(std::string s) {
         }
       }
       break;
+    }
   }
 
   this->modelNameLen = s.length();
